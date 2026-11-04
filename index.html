@@ -55,14 +55,13 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
 .card .info .row{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
 .card .info p{font-size:12px;color:var(--muted)}
 .card .add{font-size:10px;background:var(--burgundy);color:var(--cream);border:none;padding:4px 8px;letter-spacing:1px;cursor:pointer}
-/* FIXED PANEL - scrollable */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:79;display:none}
 .overlay.show{display:block}
 .panel{position:fixed;top:0;right:0;width:360px;max-width:92vw;height:100dvh;background:#fff;z-index:80;transform:translateX(100%);transition:transform .3s ease;box-shadow:-10px 0 30px rgba(0,0,0,.2);display:flex;flex-direction:column}
 .panel.open{transform:translateX(0)}
 .panel-head{padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:var(--cream);flex-shrink:0}
 .panel-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px;background:var(--beige);touch-action:pan-y}
-.panel-foot{padding:14px;border-top:1px solid var(--line);background:#fff;flex-shrink:0;position:sticky;bottom:0}
+.panel-foot{padding:14px;padding-bottom:32px;border-top:1px solid var(--line);background:#fff;flex-shrink:0;position:sticky;bottom:0;z-index:2}
 .item{display:flex;gap:10px;background:#fff;border:1px solid var(--line);padding:8px;margin-bottom:8px;align-items:center}
 .item img{width:56px;height:70px;object-fit:cover;flex-shrink:0}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
@@ -70,7 +69,7 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
 .modal-box{background:var(--cream);width:100%;max-width:420px;max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--cream);border:1px solid var(--line);padding:20px;width:90%;max-width:340px;z-index:200;display:none;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center}
 .toast.show{display:block}
-.pay-option{border:1px solid var(--line);background:#fff;padding:12px;margin-bottom:10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.pay-option{border:1px solid var(--line);background:#fff;padding:12px;margin-bottom:10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;touch-action:manipulation}
 .pay-option.active{border-color:var(--burgundy);background:var(--beige)}
 .pay-details{border:1px dashed var(--line);padding:12px;margin-top:8px;background:#fff;display:none}
 .pay-details.show{display:block}
@@ -112,7 +111,7 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
 
 <div id="shop" class="shop">
   <div class="top"><h2 class="play">E_FITS</h2><div class="icons"><div class="icon-wrap" onclick="openWallet()"><i class="fa-solid fa-wallet"></i></div><div class="icon-wrap" onclick="openFavs()"><i class="fa-regular fa-heart"></i><span id="favBadge" class="badge" style="display:none">0</span></div><div class="icon-wrap" onclick="openCart()"><i class="fa-solid fa-bag-shopping"></i><span id="cartBadge" class="badge" style="display:none">0</span></div></div></div>
-  <div style="padding:20px 18px;text-align:center;border-bottom:1px solid var(--line)"><h3 class="play" style="font-size:20px;letter-spacing:4px;color:var(--burgundy)">ADIRE COLLECTION</h3></div>
+  <div style="padding:20px 18px;text-align:center;border-bottom:1px solid var(--line)"><h3 class="play" style="font-size:20px;letter-spacing:4px;color:var(--burgundy)">ADIRE COLLECTION</h3><p style="font-size:10px;color:var(--muted);letter-spacing:2px">AUTHENTIC • HAND-DYED • BOLD</p></div>
   <div id="products" class="products"></div>
   <div style="background:var(--cream);border-top:1px solid var(--line);padding:26px 18px;text-align:center;margin-top:10px"><div style="display:flex;justify-content:center;gap:16px"><a href="https://instagram.com/shop_e_fits" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-instagram"></i></a><a href="https://vm.tiktok.com/ZS9ycW9j823LR-wAEjt/" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-tiktok"></i></a><a href="mailto:shop.efits@gmail.com" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none"><i class="fa-solid fa-envelope"></i></a><a href="https://wa.me/2349066069350" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-whatsapp"></i></a></div></div>
 </div>
@@ -121,32 +120,29 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
 
 <div id="productModal" class="modal" onclick="if(event.target==this)closeProduct()"><div class="modal-box" style="max-width:380px"><img id="pImg" style="width:100%;aspect-ratio:4/5;object-fit:cover"><div style="padding:16px"><h3 id="pName" class="play"></h3><p id="pPrice" style="color:var(--muted);margin:6px 0"></p><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="addToCartFromModal()">ADD TO BAG</button><button style="width:46px;border:1px solid var(--line);background:#fff;cursor:pointer" onclick="toggleFavFromModal()"><i id="modalHeart" class="fa-regular fa-heart"></i></button></div></div></div></div>
 
-<!-- CART - FIXED -->
 <div id="cartPanel" class="panel">
   <div class="panel-head"><h4>Your Bag - <span id="cartCountHead">0 items</span></h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCart()"></i></div>
   <div id="cartBody" class="panel-body"></div>
   <div class="panel-foot">
     <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-weight:600"><span>Total</span><span id="cartTotal">₦0</span></div>
-    <button id="checkoutBtn" class="btn" style="background:#000;color:#fff" onclick="openCheckout()">CHECKOUT & PAY →</button>
-    <p style="font-size:9px;color:var(--muted);text-align:center;margin-top:6px">Tap to choose Transfer / Card / Wallet</p>
+    <button id="checkoutBtn" class="btn" style="background:#000;color:#fff;padding:16px;font-size:14px" onclick="openCheckout()">CHECKOUT & PAY →</button>
   </div>
 </div>
 
-<!-- CHECKOUT -->
 <div id="checkoutModal" class="modal"><div class="modal-box" style="max-width:420px;background:#fff">
-  <div style="padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center"><h4 class="play">Checkout</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCheckout()"></i></div>
+  <div style="padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center"><h4 class="play">Payment Options</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCheckout()"></i></div>
   <div style="padding:16px;max-height:75dvh;overflow-y:auto;-webkit-overflow-scrolling:touch">
     <h5 style="font-size:11px;letter-spacing:2px;margin-bottom:8px">ORDER SUMMARY</h5>
     <div id="checkoutSummary" style="background:var(--beige);padding:10px;margin-bottom:16px;font-size:11px"></div>
-    <h5 style="font-size:11px;letter-spacing:2px;margin-bottom:8px">SELECT PAYMENT METHOD</h5>
+    <h5 style="font-size:11px;letter-spacing:2px;margin-bottom:8px">SELECT PAYMENT METHOD - Tap to select</h5>
     <div id="optWallet" class="pay-option" onclick="selectPay('wallet')"><div><i class="fa-solid fa-wallet"></i> Wallet - ₦<span id="walletBalText">0.00</span></div><i class="fa-regular fa-circle" id="checkWallet"></i></div>
     <div id="detailWallet" class="pay-details"><p style="font-size:11px">Pay with wallet balance</p><button class="btn" style="margin-top:10px" onclick="payWallet()">PAY WITH WALLET</button></div>
     <div id="optTransfer" class="pay-option" onclick="selectPay('transfer')"><div><i class="fa-solid fa-building-columns"></i> Bank Transfer</div><i class="fa-regular fa-circle" id="checkTransfer"></i></div>
     <div id="detailTransfer" class="pay-details">
       <div style="background:var(--beige);padding:10px;font-size:12px;line-height:1.8">
-        <div>Bank: <b>OPay - 9066069350</b></div>
+        <div>Bank: <b>OPay</b></div>
         <div>Account: <b id="acctNum">9066069350</b> <button class="copy-btn" onclick="copyAcct()">COPY</button></div>
-        <div>Name: <b>E_FITS</b></div>
+        <div>Name: <b>E_FITS - Shop E Fits</b></div>
         <div>Amount: <b id="transferAmt">₦0</b></div>
       </div>
       <button class="btn" style="margin-top:10px" onclick="payTransfer()">I HAVE TRANSFERRED</button>
@@ -279,8 +275,8 @@ function renderCart(){
 function changeQty(id,delta){let ex=cart.find(x=>x.id===id);if(!ex)return;ex.qty+=delta;if(ex.qty<=0){removeCart(id);return}localStorage.setItem('efits_cart',JSON.stringify(cart));renderCart();}
 function removeCart(id){cart=cart.filter(x=>x.id!==id);localStorage.setItem('efits_cart',JSON.stringify(cart));renderCart();renderProducts();}
 function openCart(){renderCart();document.getElementById('cartPanel').classList.add('open');document.getElementById('overlay').classList.add('show');}
-function closeCart(){document.getElementById('cartPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
-function closeAllPanels(){closeCart();closeFavs();closeWallet();document.getElementById('overlay').classList.remove('show');}
+function closeCart(){document.getElementById('cartPanel').classList.remove('open');if(!document.getElementById('checkoutModal').classList.contains('show')){document.getElementById('overlay').classList.remove('show');}}
+function closeAllPanels(){document.getElementById('cartPanel').classList.remove('open');document.getElementById('favPanel').classList.remove('open');document.getElementById('walletPanel').classList.remove('open');closeCheckout();document.getElementById('overlay').classList.remove('show');}
 function toggleFav(id){if(favs.includes(id))favs=favs.filter(x=>x!==id);else favs.push(id);localStorage.setItem('efits_favs',JSON.stringify(favs));renderProducts();renderFavs();showBrandToast(favs.includes(id)?'Added to favourites':'Removed');}
 function toggleFavFromModal(){toggleFav(currentProduct.id);let isFav=favs.includes(currentProduct.id);document.getElementById('modalHeart').className=(isFav?'fa-solid':'fa-regular')+' fa-heart';}
 function renderFavs(){let body=document.getElementById('favBody');body.innerHTML='';if(favs.length===0){body.innerHTML='<p style="font-size:12px;color:var(--muted);text-align:center;margin-top:20px">No favourites yet</p>';return} favs.forEach(id=>{let p=products.find(x=>x.id===id);let div=document.createElement('div');div.className='item';div.innerHTML=`<img src="${p.img}" onclick="openProduct(${p.id})"><div style="flex:1"><h4 style="font-size:11px">${p.name}</h4><p style="font-size:11px">₦${p.price.toLocaleString()}</p><button style="font-size:10px;margin-top:4px;background:var(--burgundy);color:#fff;border:none;padding:4px 8px" onclick="addToCart(${p.id});showBrandToast('Added to bag')">ADD TO BAG</button></div><i class="fa-solid fa-xmark" style="cursor:pointer;padding:8px" onclick="toggleFav(${p.id})"></i>`;body.appendChild(div);});}
@@ -290,17 +286,21 @@ function openWallet(){updateWalletUI();document.getElementById('walletPanel').cl
 function closeWallet(){document.getElementById('walletPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
 function updateWalletUI(){document.getElementById('walletBal').textContent='₦'+walletBalance.toLocaleString()+'.00';document.getElementById('walletBalText').textContent=walletBalance.toLocaleString()+'.00';}
 function addFunds(){walletBalance+=5000;localStorage.setItem('efits_wallet',walletBalance);updateWalletUI();showBrandToast('₦5,000 added to wallet!');}
-function toggleNotif(){let p=document.getElementById('notifPanel');if(p.classList.contains('open')){p.classList.remove('open');}else{p.style.display='flex';p.classList.add('open');}}
 function updateBadges(){let totalQty=cart.reduce((s,x)=>s+x.qty,0);let cb=document.getElementById('cartBadge');cb.style.display=totalQty?'flex':'none';cb.textContent=totalQty;let fb=document.getElementById('favBadge');fb.style.display=favs.length?'flex':'none';fb.textContent=favs.length;}
 function openCheckout(){
   if(cart.length===0){showBrandToast('Your bag is empty');return}
   let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);
   document.getElementById('checkoutSummary').innerHTML=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty} = ₦${(p.price*c.qty).toLocaleString()}`}).join('<br>')+`<br><br><b>Total: ₦${total.toLocaleString()}</b>`;
   document.getElementById('transferAmt').textContent='₦'+total.toLocaleString();
-  closeCart();
-  setTimeout(()=>{document.getElementById('checkoutModal').classList.add('show');updateWalletUI();},200);
+  document.getElementById('cartPanel').classList.remove('open');
+  document.getElementById('checkoutModal').classList.add('show');
+  document.getElementById('overlay').classList.add('show');
+  updateWalletUI();
 }
-function closeCheckout(){document.getElementById('checkoutModal').classList.remove('show');}
+function closeCheckout(){
+  document.getElementById('checkoutModal').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+}
 function selectPay(type){
   selectedPay=type;
   document.querySelectorAll('.pay-option').forEach(o=>o.classList.remove('active'));
