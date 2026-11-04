@@ -51,10 +51,13 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh}
 .card img{width:100%;aspect-ratio:3/4;object-fit:cover}
 .card .fav-btn{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.9);border:none;display:flex;align-items:center;justify-content:center;color:var(--burgundy);cursor:pointer}
 .card .info{padding:8px 10px}
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--cream);border:1px solid var(--line);padding:20px;width:90%;max-width:340px;z-index:200;display:none;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center}
-.toast.show{display:block}
+.card .info h4{font-size:11px;letter-spacing:1px;color:var(--burgundy)}
+.card .info .row{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.card .info p{font-size:12px;color:var(--muted)}
+.card .add{font-size:10px;background:var(--burgundy);color:var(--cream);border:none;padding:4px 8px;letter-spacing:1px;cursor:pointer}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
 .modal.show{display:flex}
+.modal-box{background:var(--cream);max-width:420px;width:100%;max-height:90vh;overflow-y:auto}
 .panel{position:fixed;top:0;right:0;width:360px;max-width:92vw;height:100vh;background:#fff;z-index:80;transform:translateX(100%);transition:.3s;box-shadow:-10px 0 30px rgba(0,0,0,.2);display:flex;flex-direction:column}
 .panel.open{transform:translateX(0)}
 .panel-head{padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:var(--cream)}
@@ -62,6 +65,14 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh}
 .panel-foot{padding:12px;border-top:1px solid var(--line);background:#fff}
 .item{display:flex;gap:10px;background:#fff;border:1px solid var(--line);padding:8px;margin-bottom:8px}
 .item img{width:56px;height:70px;object-fit:cover}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--cream);border:1px solid var(--line);padding:20px;width:90%;max-width:340px;z-index:200;display:none;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center}
+.toast.show{display:block}
+.pay-option{border:1px solid var(--line);background:#fff;padding:12px;margin-bottom:10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.pay-option.active{border-color:var(--burgundy);background:var(--beige)}
+.pay-details{border:1px dashed var(--line);padding:12px;margin-top:8px;background:#fff;display:none}
+.pay-details.show{display:block}
+.copy-btn{font-size:10px;padding:4px 8px;background:var(--burgundy);color:var(--cream);border:none;cursor:pointer;margin-left:8px}
+.card-input{width:100%;padding:12px;border:1px solid var(--line);margin:6px 0;font-size:13px}
 .chat-btn{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:var(--burgundy);color:var(--cream);border:none;font-size:22px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:70;display:flex;align-items:center;justify-content:center}
 .chat-panel{position:fixed;bottom:90px;right:20px;width:350px;max-width:92vw;height:460px;background:#fff;border:1px solid var(--line);box-shadow:0 16px 40px rgba(0,0,0,.25);z-index:71;display:none;flex-direction:column}
 .chat-panel.open{display:flex}
@@ -76,6 +87,7 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh}
 </style>
 </head>
 <body>
+
 <div id="auth" class="auth-wrap">
   <div class="auth-card">
     <div class="logo"><h1 class="play">E_FITS</h1><p>Bold.Intentional.Minimal</p></div>
@@ -85,51 +97,76 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh}
     </div>
     <div class="field"><input id="email" type="email" placeholder="Email Address" oninput="validateEmail()"></div>
     <div id="emailError" class="error"></div>
-    <div class="field">
-      <input id="password" type="password" placeholder="Password" oninput="checkStrength()">
-      <span class="eye" onclick="toggleEye('password','eye1')"><i id="eye1" class="fa-regular fa-eye"></i></span>
-    </div>
-    <div id="strengthWrap" class="strength-wrap" style="display:none">
-      <div class="strength-bar"><span id="bar1"></span><span id="bar2"></span><span id="bar3"></span><span id="bar4"></span><span id="bar5"></span></div>
-      <div id="strengthText" class="strength-text"></div>
-    </div>
-    <div id="rules" class="rules" style="display:none">
-      <span id="ruleLen">✗ At least 8 characters</span>
-      <span id="ruleUpper">✗ One uppercase (A-Z)</span>
-      <span id="ruleLower">✗ One lowercase (a-z)</span>
-      <span id="ruleNum">✗ One number (0-9)</span>
-      <span id="ruleSpecial">✗ One special (!@#$%^&*)</span>
-    </div>
+    <div class="field"><input id="password" type="password" placeholder="Password" oninput="checkStrength()"><span class="eye" onclick="toggleEye('password','eye1')"><i id="eye1" class="fa-regular fa-eye"></i></span></div>
+    <div id="strengthWrap" class="strength-wrap" style="display:none"><div class="strength-bar"><span id="bar1"></span><span id="bar2"></span><span id="bar3"></span><span id="bar4"></span><span id="bar5"></span></div><div id="strengthText" class="strength-text"></div></div>
+    <div id="rules" class="rules" style="display:none"><span id="ruleLen">✗ At least 8 characters</span><span id="ruleUpper">✗ One uppercase</span><span id="ruleLower">✗ One lowercase</span><span id="ruleNum">✗ One number</span><span id="ruleSpecial">✗ One special</span></div>
     <div id="passError" class="error"></div>
-    <div id="signupExtra" style="display:none">
-      <div class="field"><input id="confirm" type="password" placeholder="Confirm Password" oninput="validateConfirm()">
-        <span class="eye" onclick="toggleEye('confirm','eye2')"><i id="eye2" class="fa-regular fa-eye"></i></span>
-      </div>
-      <div id="confirmError" class="error"></div>
-    </div>
+    <div id="signupExtra" style="display:none"><div class="field"><input id="confirm" type="password" placeholder="Confirm Password" oninput="validateConfirm()"><span class="eye" onclick="toggleEye('confirm','eye2')"><i id="eye2" class="fa-regular fa-eye"></i></span></div><div id="confirmError" class="error"></div></div>
     <div class="forgot"><a onclick="openForgot()">Forgot password?</a></div>
-    <button id="enterBtn" class="btn" onclick="enterBoutique()">ENTER BOUTIQUE</button>
+    <button class="btn" onclick="enterBoutique()">ENTER BOUTIQUE</button>
   </div>
 </div>
 
 <div id="shop" class="shop">
   <div class="top"><h2 class="play">E_FITS</h2><div class="icons"><div class="icon-wrap" onclick="openWallet()"><i class="fa-solid fa-wallet"></i></div><div class="icon-wrap" onclick="toggleNotif()"><i class="fa-regular fa-bell"></i><span class="badge">2</span></div><div class="icon-wrap" onclick="openFavs()"><i class="fa-regular fa-heart"></i><span id="favBadge" class="badge" style="display:none">0</span></div><div class="icon-wrap" onclick="openCart()"><i class="fa-solid fa-bag-shopping"></i><span id="cartBadge" class="badge" style="display:none">0</span></div></div></div>
-  <div class="hero"><h3 class="play">ADIRE COLLECTION</h3><p style="font-size:10px;color:var(--muted);letter-spacing:2px">AUTHENTIC • HAND-DYED • BOLD</p></div>
+  <div style="padding:20px 18px;text-align:center;border-bottom:1px solid var(--line)"><h3 class="play" style="font-size:20px;letter-spacing:4px;color:var(--burgundy)">ADIRE COLLECTION</h3></div>
   <div id="products" class="products"></div>
-  <div style="background:var(--cream);border-top:1px solid var(--line);padding:26px 18px;text-align:center;margin-top:10px">
-    <div style="display:flex;justify-content:center;gap:16px">
-      <a href="https://instagram.com/shop_e_fits" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-instagram"></i></a>
-      <a href="https://vm.tiktok.com/ZS9ycW9j823LR-wAEjt/" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-tiktok"></i></a>
-      <a href="mailto:shop.efits@gmail.com" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none"><i class="fa-solid fa-envelope"></i></a>
-      <a href="https://wa.me/2349066069350?text=Hi%20E_FITS" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-whatsapp"></i></a>
-    </div>
-  </div>
+  <div style="background:var(--cream);border-top:1px solid var(--line);padding:26px 18px;text-align:center;margin-top:10px"><div style="display:flex;justify-content:center;gap:16px"><a href="https://instagram.com/shop_e_fits" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-instagram"></i></a><a href="https://vm.tiktok.com/ZS9ycW9j823LR-wAEjt/" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-tiktok"></i></a><a href="mailto:shop.efits@gmail.com" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none"><i class="fa-solid fa-envelope"></i></a><a href="https://wa.me/2349066069350" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-whatsapp"></i></a></div></div>
 </div>
 
-<div id="productModal" class="modal" onclick="if(event.target==this)closeProduct()"><div class="modal-box" style="max-width:380px"><img id="pImg" class="img" style="width:100%;aspect-ratio:4/5;object-fit:cover"><div style="padding:16px"><h3 id="pName" class="play"></h3><p id="pPrice" style="color:var(--muted);margin:6px 0"></p><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="addToCartFromModal()">ADD TO BAG</button><button style="width:46px;border:1px solid var(--line);background:#fff;cursor:pointer" onclick="toggleFavFromModal()"><i id="modalHeart" class="fa-regular fa-heart"></i></button></div></div></div></div>
-<div id="cartPanel" class="panel"><div class="panel-head"><h4>Your Bag</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCart()"></i></div><div id="cartBody" class="panel-body"></div><div class="panel-foot"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><span>Total</span><span id="cartTotal">₦0</span></div><button class="btn" onclick="checkout()">CHECKOUT VIA WHATSAPP</button></div></div>
+<!-- PRODUCT -->
+<div id="productModal" class="modal" onclick="if(event.target==this)closeProduct()"><div class="modal-box" style="max-width:380px"><img id="pImg" style="width:100%;aspect-ratio:4/5;object-fit:cover"><div style="padding:16px"><h3 id="pName" class="play"></h3><p id="pPrice" style="color:var(--muted);margin:6px 0"></p><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="addToCartFromModal()">ADD TO BAG</button><button style="width:46px;border:1px solid var(--line);background:#fff;cursor:pointer" onclick="toggleFavFromModal()"><i id="modalHeart" class="fa-regular fa-heart"></i></button></div></div></div></div>
+
+<!-- CART -->
+<div id="cartPanel" class="panel"><div class="panel-head"><h4>Your Bag</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCart()"></i></div><div id="cartBody" class="panel-body"></div><div class="panel-foot"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><span>Total</span><span id="cartTotal">₦0</span></div><button class="btn" onclick="openCheckout()">CHECKOUT → PAY</button></div></div>
+
+<!-- CHECKOUT PAYMENT PAGE - NEW -->
+<div id="checkoutModal" class="modal"><div class="modal-box" style="max-width:420px;background:#fff">
+  <div style="padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center"><h4 class="play">Checkout</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCheckout()"></i></div>
+  <div style="padding:16px;max-height:75vh;overflow-y:auto">
+    <h5 style="font-size:11px;letter-spacing:2px;margin-bottom:8px">ORDER SUMMARY</h5>
+    <div id="checkoutSummary" style="background:var(--beige);padding:10px;margin-bottom:16px;font-size:11px"></div>
+    <h5 style="font-size:11px;letter-spacing:2px;margin-bottom:8px">SELECT PAYMENT METHOD</h5>
+    
+    <!-- WALLET -->
+    <div id="optWallet" class="pay-option" onclick="selectPay('wallet')">
+      <div><i class="fa-solid fa-wallet"></i> Pay with Wallet <span style="font-size:10px;color:var(--muted)">Balance: ₦<span id="walletBalText">0.00</span></span></div><i class="fa-regular fa-circle" id="checkWallet"></i>
+    </div>
+    <div id="detailWallet" class="pay-details"><p style="font-size:11px">Your wallet balance will be debited. If insufficient, add funds.</p><button class="btn" style="margin-top:10px" onclick="payWallet()">PAY WITH WALLET</button></div>
+
+    <!-- TRANSFER -->
+    <div id="optTransfer" class="pay-option" onclick="selectPay('transfer')">
+      <div><i class="fa-solid fa-building-columns"></i> Bank Transfer</div><i class="fa-regular fa-circle" id="checkTransfer"></i>
+    </div>
+    <div id="detailTransfer" class="pay-details">
+      <p style="font-size:11px;margin-bottom:8px;font-weight:600">Transfer to E_FITS Business Account:</p>
+      <div style="background:var(--beige);padding:10px;font-size:12px;line-height:1.8">
+        <div>Bank: <b>OPay / Access Bank</b> <span style="font-size:9px;color:var(--muted)">(change to her real bank)</span></div>
+        <div>Account Number: <b id="acctNum">9066069350</b> <button class="copy-btn" onclick="copyAcct()">COPY</button></div>
+        <div>Account Name: <b>E_FITS - Shop E Fits</b></div>
+        <div>Amount: <b id="transferAmt">₦0</b></div>
+      </div>
+      <p style="font-size:10px;color:var(--muted);margin-top:6px">After transfer, click confirm. We go confirm payment for WhatsApp.</p>
+      <button class="btn" style="margin-top:10px" onclick="payTransfer()">I HAVE TRANSFERRED</button>
+    </div>
+
+    <!-- CARD -->
+    <div id="optCard" class="pay-option" onclick="selectPay('card')">
+      <div><i class="fa-regular fa-credit-card"></i> Pay with Card</div><i class="fa-regular fa-circle" id="checkCard"></i>
+    </div>
+    <div id="detailCard" class="pay-details">
+      <input id="cardNumber" class="card-input" placeholder="Card Number (e.g. 4123 4567 8901 2345)" maxlength="19" oninput="formatCard()">
+      <div style="display:flex;gap:8px"><input id="cardExpiry" class="card-input" placeholder="MM/YY" maxlength="5"><input id="cardCvv" class="card-input" placeholder="CVV" maxlength="3"></div>
+      <input id="cardName" class="card-input" placeholder="Name on Card">
+      <button class="btn" style="margin-top:8px" onclick="payCard()">PAY WITH CARD</button>
+      <p style="font-size:9px;color:var(--muted);text-align:center;margin-top:6px">Secured by Paystack (Demo — connect real Paystack later)</p>
+    </div>
+  </div>
+</div></div>
+
+<!-- OTHER PANELS -->
 <div id="favPanel" class="panel"><div class="panel-head"><h4>Favourites</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeFavs()"></i></div><div id="favBody" class="panel-body"></div><div class="panel-foot"><button class="btn" onclick="closeFavs()">CONTINUE SHOPPING</button></div></div>
-<div id="walletPanel" class="panel"><div class="panel-head"><h4>My Wallet</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeWallet()"></i></div><div class="panel-body"><div style="background:var(--burgundy);color:var(--cream);padding:20px;text-align:center"><p style="font-size:11px;letter-spacing:2px">WALLET BALANCE</p><h2 style="font-size:28px;margin-top:6px">₦0.00</h2></div><button class="btn" style="margin-top:12px" onclick="showBrandToast('Wallet top-up coming soon!')">ADD FUNDS</button></div></div>
+<div id="walletPanel" class="panel"><div class="panel-head"><h4>My Wallet</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeWallet()"></i></div><div class="panel-body"><div style="background:var(--burgundy);color:var(--cream);padding:20px;text-align:center"><p style="font-size:11px;letter-spacing:2px">WALLET BALANCE</p><h2 id="walletBal" style="font-size:28px;margin-top:6px">₦0.00</h2></div><button class="btn" style="margin-top:12px" onclick="addFunds()">ADD FUNDS ₦5000</button><p style="font-size:10px;color:var(--muted);margin-top:10px">Wallet fit be used to pay for orders instantly.</p></div></div>
 <div id="notifPanel" class="panel" style="height:auto;top:60px;right:10px;bottom:auto;width:300px"><div class="panel-head"><h4>Notifications</h4><i class="fa-solid fa-xmark" onclick="toggleNotif()"></i></div><div class="panel-body"><p style="font-size:11px;padding:8px 0">✨ New Adire collection live!</p></div></div>
 <div id="forgotModal" class="modal" onclick="if(event.target==this)closeForgot()"><div class="modal-box" style="padding:24px;text-align:center;max-width:360px;background:var(--cream)"><h1 class="play" style="letter-spacing:6px;font-size:20px;color:var(--burgundy)">E_FITS</h1><h3 style="margin-top:8px">Reset Password</h3><input id="forgotEmail" type="email" placeholder="Email Address" style="width:100%;padding:12px;border:1px solid var(--line);margin:12px 0"><button class="btn" onclick="sendReset()">SEND RESET LINK</button><p style="font-size:11px;text-align:center;margin-top:10px;cursor:pointer;text-decoration:underline;color:var(--muted)" onclick="closeForgot()">Back to login</p></div></div>
 <div id="brandToast" class="toast"><h4 class="play">E_FITS</h4><p id="toastMsg"></p><button class="btn" style="margin-top:12px;padding:10px" onclick="closeToast()">OK</button></div>
@@ -137,7 +174,7 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh}
 <div id="chatPanel" class="chat-panel"><div class="chat-head"><h4>E_FITS Support</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="toggleChat()"></i></div><div id="chatBody" class="chat-body"><div class="msg bot">Hi! Welcome to E_FITS 💜</div></div><div class="chat-input"><input id="chatInput" placeholder="Type message..." onkeydown="if(event.key==='Enter')sendMsg()"><button onclick="sendMsg()"><i class="fa-solid fa-paper-plane"></i></button></div></div>
 
 <script>
-let tab='login'; let currentProduct=null;
+let tab='login'; let currentProduct=null; let selectedPay=null;
 let products=[
  {id:1,name:'ADIRE ANO BOUBOU',price:18500,img:'https://i.etsystatic.com/36417893/r/il/6ab6f9/7581955343/il_fullxfull.7581955343_h7la.jpg'},
  {id:2,name:'INDIGO DYED DRESS',price:22000,img:'https://concubycm.com/cdn/shop/files/Ugodress_Adire_Asooke_2ab7800f-49de-443e-9953-afe8551aec1e.jpg?v=1777495413&width=600'},
@@ -148,8 +185,10 @@ let products=[
 ];
 let cart=JSON.parse(localStorage.getItem('efits_cart')||'[]');
 let favs=JSON.parse(localStorage.getItem('efits_favs')||'[]');
+let walletBalance=parseInt(localStorage.getItem('efits_wallet')||'0');
+
 function isValidEmail(email){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);}
-function getPasswordScore(pw){let score=0;if(pw.length>=8)score++;if(/[A-Z]/.test(pw))score++;if(/[a-z]/.test(pw))score++;if(/[0-9]/.test(pw))score++;if(/[^A-Za-z0-9]/.test(pw))score++;return score;}
+function getPasswordScore(pw){let s=0;if(pw.length>=8)s++;if(/[A-Z]/.test(pw))s++;if(/[a-z]/.test(pw))s++;if(/[0-9]/.test(pw))s++;if(/[^A-Za-z0-9]/.test(pw))s++;return s;}
 function checkStrength(){
   let pw=document.getElementById('password').value;
   let wrap=document.getElementById('strengthWrap');
@@ -163,13 +202,13 @@ function checkStrength(){
   let text=document.getElementById('strengthText');
   document.getElementById('ruleLen').textContent=(pw.length>=8?'✓':'✗')+' At least 8 characters';
   document.getElementById('ruleLen').className=pw.length>=8?'ok':'';
-  document.getElementById('ruleUpper').textContent=(/[A-Z]/.test(pw)?'✓':'✗')+' One uppercase (A-Z)';
+  document.getElementById('ruleUpper').textContent=(/[A-Z]/.test(pw)?'✓':'✗')+' One uppercase';
   document.getElementById('ruleUpper').className=/[A-Z]/.test(pw)?'ok':'';
-  document.getElementById('ruleLower').textContent=(/[a-z]/.test(pw)?'✓':'✗')+' One lowercase (a-z)';
+  document.getElementById('ruleLower').textContent=(/[a-z]/.test(pw)?'✓':'✗')+' One lowercase';
   document.getElementById('ruleLower').className=/[a-z]/.test(pw)?'ok':'';
-  document.getElementById('ruleNum').textContent=(/[0-9]/.test(pw)?'✓':'✗')+' One number (0-9)';
+  document.getElementById('ruleNum').textContent=(/[0-9]/.test(pw)?'✓':'✗')+' One number';
   document.getElementById('ruleNum').className=/[0-9]/.test(pw)?'ok':'';
-  document.getElementById('ruleSpecial').textContent=(/[^A-Za-z0-9]/.test(pw)?'✓':'✗')+' One special (!@#$%^&*)';
+  document.getElementById('ruleSpecial').textContent=(/[^A-Za-z0-9]/.test(pw)?'✓':'✗')+' One special';
   document.getElementById('ruleSpecial').className=/[^A-Za-z0-9]/.test(pw)?'ok':'';
   if(score<=2){bars.slice(0,2).forEach(b=>b.className='active-weak');text.textContent='WEAK';text.className='strength-text weak';}
   else if(score<=3){bars.slice(0,3).forEach(b=>b.className='active-medium');text.textContent='MEDIUM';text.className='strength-text medium';}
@@ -181,7 +220,7 @@ function validateEmail(){
   let err=document.getElementById('emailError');
   let input=document.getElementById('email');
   if(!e){err.textContent='';input.classList.remove('invalid');return false}
-  if(!isValidEmail(e)){err.textContent='Invalid email — must include @ and domain (e.g. you@gmail.com)';input.classList.add('invalid');return false}
+  if(!isValidEmail(e)){err.textContent='Invalid email — must include @ and domain';input.classList.add('invalid');return false}
   err.textContent='';input.classList.remove('invalid');return true
 }
 function validateConfirm(){
@@ -197,22 +236,22 @@ function toggleEye(id,iconId){let i=document.getElementById(id);let ic=document.
 function enterBoutique(){
   let e=document.getElementById('email').value.trim();
   let p=document.getElementById('password').value;
-  if(!isValidEmail(e)){showBrandToast('Please enter a valid email (e.g. you@gmail.com)');validateEmail();return;}
+  if(!isValidEmail(e)){showBrandToast('Please enter a valid email');validateEmail();return;}
   if(!p){document.getElementById('passError').textContent='Password required';return;}
   document.getElementById('passError').textContent='';
   if(tab==='signup'){
     let score=getPasswordScore(p);
-    if(score<5){showBrandToast('Password must have: 8 chars, uppercase, lowercase, number & special character');return;}
+    if(score<5){showBrandToast('Password must have: 8 chars, uppercase, lowercase, number & special');return;}
     let c=document.getElementById('confirm').value;
     if(p!==c){document.getElementById('confirmError').textContent='Passwords do not match';return;}
   }
   document.getElementById('auth').style.display='none';
   document.getElementById('shop').classList.add('active');
-  renderProducts();
+  renderProducts(); updateWalletUI();
 }
 function openForgot(){document.getElementById('forgotModal').classList.add('show')}
 function closeForgot(){document.getElementById('forgotModal').classList.remove('show')}
-function sendReset(){let e=document.getElementById('forgotEmail').value.trim();if(!isValidEmail(e)){showBrandToast('Enter a valid email to reset');return}closeForgot();showBrandToast('Reset link sent to ' + e);}
+function sendReset(){let e=document.getElementById('forgotEmail').value.trim();if(!isValidEmail(e)){showBrandToast('Enter valid email');return}closeForgot();showBrandToast('Reset link sent to ' + e);}
 function showBrandToast(msg){document.getElementById('toastMsg').textContent=msg;document.getElementById('brandToast').classList.add('show');}
 function closeToast(){document.getElementById('brandToast').classList.remove('show')}
 function renderProducts(){
@@ -235,18 +274,69 @@ function renderCart(){let body=document.getElementById('cartBody');body.innerHTM
 function removeCart(id){cart=cart.filter(x=>x.id!==id);localStorage.setItem('efits_cart',JSON.stringify(cart));renderCart();renderProducts();}
 function openCart(){renderCart();document.getElementById('cartPanel').classList.add('open')}
 function closeCart(){document.getElementById('cartPanel').classList.remove('open')}
-function toggleFav(id){if(favs.includes(id))favs=favs.filter(x=>x!==id);else favs.push(id);localStorage.setItem('efits_favs',JSON.stringify(favs));renderProducts();renderFavs();showBrandToast(favs.includes(id)?'Added to favourites':'Removed from favourites');}
+function toggleFav(id){if(favs.includes(id))favs=favs.filter(x=>x!==id);else favs.push(id);localStorage.setItem('efits_favs',JSON.stringify(favs));renderProducts();renderFavs();showBrandToast(favs.includes(id)?'Added to favourites':'Removed');}
 function toggleFavFromModal(){toggleFav(currentProduct.id);let isFav=favs.includes(currentProduct.id);document.getElementById('modalHeart').className=(isFav?'fa-solid':'fa-regular')+' fa-heart';}
-function renderFavs(){let body=document.getElementById('favBody');body.innerHTML='';if(favs.length===0){body.innerHTML='<p style="font-size:12px;color:var(--muted);text-align:center;margin-top:20px">No favourites yet. Tap heart on any Adire you like.</p>';return} favs.forEach(id=>{let p=products.find(x=>x.id===id);let div=document.createElement('div');div.className='item';div.innerHTML=`<img src="${p.img}" onclick="openProduct(${p.id})"><div style="flex:1"><h4 style="font-size:11px">${p.name}</h4><p style="font-size:11px">₦${p.price.toLocaleString()}</p><button style="font-size:10px;margin-top:4px;background:var(--burgundy);color:#fff;border:none;padding:4px 8px" onclick="addToCart(${p.id});showBrandToast('Added to bag')">ADD TO BAG</button></div><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="toggleFav(${p.id})"></i>`;body.appendChild(div);});}
+function renderFavs(){let body=document.getElementById('favBody');body.innerHTML='';if(favs.length===0){body.innerHTML='<p style="font-size:12px;color:var(--muted);text-align:center;margin-top:20px">No favourites yet</p>';return} favs.forEach(id=>{let p=products.find(x=>x.id===id);let div=document.createElement('div');div.className='item';div.innerHTML=`<img src="${p.img}" onclick="openProduct(${p.id})"><div style="flex:1"><h4 style="font-size:11px">${p.name}</h4><p style="font-size:11px">₦${p.price.toLocaleString()}</p><button style="font-size:10px;margin-top:4px;background:var(--burgundy);color:#fff;border:none;padding:4px 8px" onclick="addToCart(${p.id});showBrandToast('Added to bag')">ADD TO BAG</button></div><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="toggleFav(${p.id})"></i>`;body.appendChild(div);});}
 function openFavs(){renderFavs();document.getElementById('favPanel').classList.add('open')}
 function closeFavs(){document.getElementById('favPanel').classList.remove('open')}
-function openWallet(){document.getElementById('walletPanel').classList.add('open')}
+function openWallet(){updateWalletUI();document.getElementById('walletPanel').classList.add('open')}
 function closeWallet(){document.getElementById('walletPanel').classList.remove('open')}
+function updateWalletUI(){document.getElementById('walletBal').textContent='₦'+walletBalance.toLocaleString()+'.00';document.getElementById('walletBalText').textContent=walletBalance.toLocaleString()+'.00';}
+function addFunds(){walletBalance+=5000;localStorage.setItem('efits_wallet',walletBalance);updateWalletUI();showBrandToast('₦5,000 added to wallet!');}
 function toggleNotif(){document.getElementById('notifPanel').classList.toggle('open')}
 function updateBadges(){let totalQty=cart.reduce((s,x)=>s+x.qty,0);let cb=document.getElementById('cartBadge');cb.style.display=totalQty?'flex':'none';cb.textContent=totalQty;let fb=document.getElementById('favBadge');fb.style.display=favs.length?'flex':'none';fb.textContent=favs.length;}
-function checkout(){if(cart.length===0){showBrandToast('Your bag is empty');return}let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);let text=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty} = ₦${p.price*c.qty}`}).join('%0A');let msg=`Hi E_FITS, I want to order:%0A${text}%0A%0ATotal: ₦${total}`;window.open('https://wa.me/2349066069350?text='+msg,'_blank');}
+function openCheckout(){
+  if(cart.length===0){showBrandToast('Your bag is empty');return}
+  closeCart();
+  let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);
+  document.getElementById('checkoutSummary').innerHTML=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty} = ₦${(p.price*c.qty).toLocaleString()}`}).join('<br>')+`<br><br><b>Total: ₦${total.toLocaleString()}</b>`;
+  document.getElementById('transferAmt').textContent='₦'+total.toLocaleString();
+  document.getElementById('checkoutModal').classList.add('show');
+  updateWalletUI();
+}
+function closeCheckout(){document.getElementById('checkoutModal').classList.remove('show');}
+function selectPay(type){
+  selectedPay=type;
+  document.querySelectorAll('.pay-option').forEach(o=>o.classList.remove('active'));
+  document.querySelectorAll('.pay-details').forEach(d=>d.classList.remove('show'));
+  document.querySelectorAll('[id^=check]').forEach(c=>c.className='fa-regular fa-circle');
+  document.getElementById('opt'+type.charAt(0).toUpperCase()+type.slice(1)).classList.add('active');
+  document.getElementById('detail'+type.charAt(0).toUpperCase()+type.slice(1)).classList.add('show');
+  document.getElementById('check'+type.charAt(0).toUpperCase()+type.slice(1)).className='fa-solid fa-circle-check';
+}
+function copyAcct(){let num=document.getElementById('acctNum').textContent;navigator.clipboard.writeText(num);showBrandToast('Account number copied: '+num);}
+function payWallet(){
+  let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);
+  if(walletBalance<total){showBrandToast('Insufficient wallet balance. Add funds. Balance: ₦'+walletBalance);return}
+  walletBalance-=total;localStorage.setItem('efits_wallet',walletBalance);updateWalletUI();
+  completeOrder('Wallet');
+}
+function payTransfer(){
+  let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);
+  completeOrder('Bank Transfer to 9066069350');
+}
+function payCard(){
+  let num=document.getElementById('cardNumber').value.trim();
+  let exp=document.getElementById('cardExpiry').value.trim();
+  let cvv=document.getElementById('cardCvv').value.trim();
+  let name=document.getElementById('cardName').value.trim();
+  if(!num || !exp || !cvv || !name){showBrandToast('Please fill all card details');return}
+  if(num.replace(/\s/g,'').length<16){showBrandToast('Invalid card number');return}
+  completeOrder('Card ending '+num.slice(-4));
+}
+function completeOrder(method){
+  let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);
+  let text=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty}`}).join('%0A');
+  closeCheckout();
+  showBrandToast('Payment successful via '+method+'! Order total ₦'+total.toLocaleString());
+  // Send to WhatsApp for confirmation
+  let msg=`Hi E_FITS, I just paid via ${method}!%0A%0AOrder:%0A${text}%0A%0ATotal: ₦${total}%0APayment Method: ${method}`;
+  setTimeout(()=>window.open('https://wa.me/2349066069350?text='+msg,'_blank'),800);
+  cart=[];localStorage.setItem('efits_cart',JSON.stringify(cart));renderProducts();renderCart();
+}
+function formatCard(){let i=document.getElementById('cardNumber');let v=i.value.replace(/\D/g,'').slice(0,16);let f=v.replace(/(.{4})/g,'$1 ').trim();i.value=f;}
 function toggleChat(){document.getElementById('chatPanel').classList.toggle('open')}
-function sendMsg(){let input=document.getElementById('chatInput');let txt=input.value.trim();if(!txt)return;let body=document.getElementById('chatBody');let d=document.createElement('div');d.className='msg user';d.textContent=txt;body.appendChild(d);input.value='';body.scrollTop=body.scrollHeight;setTimeout(()=>{let r=document.createElement('div');r.className='msg bot';r.textContent='Got it! We go reply here inside the app shortly.';body.appendChild(r);body.scrollTop=body.scrollHeight;},600);}
+function sendMsg(){let input=document.getElementById('chatInput');let txt=input.value.trim();if(!txt)return;let body=document.getElementById('chatBody');let d=document.createElement('div');d.className='msg user';d.textContent=txt;body.appendChild(d);input.value='';body.scrollTop=body.scrollHeight;setTimeout(()=>{let r=document.createElement('div');r.className='msg bot';r.textContent='Got it! We go reply here shortly.';body.appendChild(r);body.scrollTop=body.scrollHeight;},600);}
 </script>
 </body>
 </html>
