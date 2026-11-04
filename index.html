@@ -12,7 +12,7 @@
 body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh}
 .play{font-family:'Playfair Display',serif}
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--burgundy)}
-.auth-card{background:var(--cream);width:100%;max-width:420px;padding:36px 28px 28px;border-radius:2px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.auth-card{background:var(--cream);width:100%;max-width:420px;padding:36px 28px 28px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .logo{text-align:center;margin-bottom:22px}
 .logo h1{font-size:48px;letter-spacing:8px;color:var(--burgundy);font-weight:700}
 .logo p{letter-spacing:3px;font-size:12px;color:var(--muted);margin-top:6px;text-transform:uppercase}
@@ -27,29 +27,41 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh}
 .btn{width:100%;padding:14px;background:var(--burgundy);color:var(--cream);border:none;letter-spacing:2px;font-size:13px;cursor:pointer;font-weight:600}
 .shop{display:none;min-height:100vh;background:var(--cream)}
 .shop.active{display:block}
-.nav{position:sticky;top:0;z-index:10;background:var(--cream);border-bottom:1px solid var(--line);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
-.nav h2{letter-spacing:6px;font-size:22px;color:var(--burgundy)}
+.top{position:sticky;top:0;z-index:10;background:var(--cream);border-bottom:1px solid var(--line);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+.top h2{letter-spacing:6px;font-size:22px;color:var(--burgundy)}
+.icons{display:flex;gap:18px;font-size:18px;color:var(--burgundy);position:relative}
+.icons i{cursor:pointer}
+.badge{position:absolute;top:-6px;right:-8px;background:var(--burgundy);color:var(--cream);font-size:9px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.hero{padding:22px 18px;text-align:center;border-bottom:1px solid var(--line)}
+.hero h3{font-size:22px;letter-spacing:4px;color:var(--burgundy);margin-bottom:6px}
+.hero p{font-size:11px;color:var(--muted);letter-spacing:2px}
 .products{padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.card{background:#fff;border:1px solid var(--line);overflow:hidden}
+.card{background:#fff;border:1px solid var(--line);overflow:hidden;cursor:pointer}
 .card img{width:100%;aspect-ratio:3/4;object-fit:cover}
 .card .info{padding:10px}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--cream);border:1px solid var(--line);padding:22px;width:90%;max-width:340px;z-index:200;display:none;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center}
+.toast.show{display:block}
+.toast h4{letter-spacing:3px;font-size:14px;color:var(--burgundy);margin-bottom:8px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
 .modal.show{display:flex}
-.modal-box{background:var(--cream);max-width:360px;width:100%;padding:22px}
+.modal-box{background:var(--cream);max-width:360px;width:100%;padding:24px;text-align:center}
 .chat-btn{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:var(--burgundy);color:var(--cream);border:none;font-size:22px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:90;display:flex;align-items:center;justify-content:center}
-.chat-panel{position:fixed;bottom:90px;right:20px;width:340px;max-width:90vw;height:420px;background:#fff;border:1px solid var(--line);box-shadow:0 16px 40px rgba(0,0,0,.25);z-index:91;display:none;flex-direction:column}
+.chat-panel{position:fixed;bottom:90px;right:20px;width:350px;max-width:92vw;height:460px;background:#fff;border:1px solid var(--line);box-shadow:0 16px 40px rgba(0,0,0,.25);z-index:91;display:none;flex-direction:column}
 .chat-panel.open{display:flex}
 .chat-head{background:var(--burgundy);color:var(--cream);padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
 .chat-body{flex:1;padding:12px;overflow-y:auto;background:var(--beige);display:flex;flex-direction:column;gap:8px}
-.msg{max-width:80%;padding:8px 10px;font-size:12px;line-height:1.4;border-radius:8px}
+.msg{max-width:82%;padding:9px 11px;font-size:12px;line-height:1.4;border-radius:10px}
 .msg.bot{background:#fff;border:1px solid var(--line);align-self:flex-start}
 .msg.user{background:var(--burgundy);color:var(--cream);align-self:flex-end}
 .chat-input{padding:10px;border-top:1px solid var(--line);display:flex;gap:8px;background:#fff}
 .chat-input input{flex:1;padding:10px;border:1px solid var(--line);font-size:12px;outline:none}
 .chat-input button{padding:10px 14px;background:var(--burgundy);color:#fff;border:none;cursor:pointer}
+.notif-panel{position:fixed;top:60px;right:10px;width:300px;background:#fff;border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.2);z-index:50;display:none;padding:14px}
+.notif-panel.open{display:block}
 </style>
 </head>
 <body>
+
 <div id="auth" class="auth-wrap">
   <div class="auth-card">
     <div class="logo"><h1 class="play">E_FITS</h1><p>Bold.Intentional.Minimal</p></div>
@@ -74,38 +86,66 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh}
 </div>
 
 <div id="shop" class="shop">
-  <div class="nav"><h2 class="play">E_FITS</h2></div>
+  <div class="top">
+    <h2 class="play">E_FITS</h2>
+    <div class="icons">
+      <span style="position:relative"><i class="fa-regular fa-bell" onclick="toggleNotif()"></i><span class="badge">2</span></span>
+      <i class="fa-regular fa-heart"></i>
+      <i class="fa-solid fa-bag-shopping"></i>
+    </div>
+  </div>
+  <div id="notifPanel" class="notif-panel">
+    <h4 style="font-size:12px;letter-spacing:1px;margin-bottom:8px">Notifications</h4>
+    <p style="font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--line)">✨ New collection dropping soon</p>
+    <p style="font-size:11px;color:var(--muted);padding:6px 0">📦 Your order is being processed</p>
+  </div>
+  <div class="hero">
+    <h3 class="play">NEW IN</h3>
+    <p>CURATED FOR THE BOLD WOMAN</p>
+  </div>
   <div class="products">
     <div class="card"><img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400"><div class="info"><h4>MINIMAL SET</h4><p>₦18,500</p></div></div>
     <div class="card"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400"><div class="info"><h4>BOLD DRESS</h4><p>₦22,000</p></div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1550928431-ee0ec6db30d3?w=400"><div class="info"><h4>INTENTIONAL TOP</h4><p>₦12,000</p></div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=400"><div class="info"><h4>CREAM CO-ORD</h4><p>₦20,000</p></div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400"><div class="info"><h4>SILK SLIP</h4><p>₦16,500</p></div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=400"><div class="info"><h4>LINEN BLAZER</h4><p>₦28,000</p></div></div>
   </div>
 
-  <!-- CLICKABLE LOGOS - HER REAL LINKS -->
-  <div style="background:#fdf8f3;border-top:1px solid #e8ddd0;padding:26px 18px;text-align:center;margin-top:10px">
-    <p style="letter-spacing:3px;font-size:11px;color:#9a8a7a;margin-bottom:14px">CONNECT WITH E_FITS</p>
+  <div style="background:var(--cream);border-top:1px solid var(--line);padding:26px 18px;text-align:center;margin-top:10px">
+    <p style="letter-spacing:3px;font-size:11px;color:var(--muted);margin-bottom:14px">CONNECT WITH E_FITS</p>
     <div style="display:flex;justify-content:center;gap:16px">
-      <a href="https://instagram.com/shop_e_fits" target="_blank" style="width:44px;height:44px;border-radius:50%;background:#3a1414;color:#fdf8f3;display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-instagram"></i></a>
-      <a href="https://vm.tiktok.com/ZS9ycW9j823LR-wAEjt/" target="_blank" style="width:44px;height:44px;border-radius:50%;background:#3a1414;color:#fdf8f3;display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-tiktok"></i></a>
-      <a href="mailto:shop.efits@gmail.com?subject=Hello%20E_FITS&body=Hi%20E_FITS%20team," style="width:44px;height:44px;border-radius:50%;background:#3a1414;color:#fdf8f3;display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none"><i class="fa-solid fa-envelope"></i></a>
-      <a href="https://wa.me/2349066069350?text=Hi%20E_FITS%20I%20need%20help%20with%20my%20order" target="_blank" style="width:44px;height:44px;border-radius:50%;background:#3a1414;color:#fdf8f3;display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-whatsapp"></i></a>
+      <a href="https://instagram.com/shop_e_fits" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://vm.tiktok.com/ZS9ycW9j823LR-wAEjt/" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-tiktok"></i></a>
+      <a href="mailto:shop.efits@gmail.com?subject=Hello%20E_FITS" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none"><i class="fa-solid fa-envelope"></i></a>
+      <a href="https://wa.me/2349066069350?text=Hi%20E_FITS" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-whatsapp"></i></a>
     </div>
-    <p style="font-size:10px;color:#9a8a7a;margin-top:14px">IG • TikTok • Gmail • WhatsApp - Tap to connect</p>
   </div>
 </div>
 
 <div id="forgotModal" class="modal" onclick="if(event.target==this)closeForgot()">
   <div class="modal-box">
-    <h3 class="play">Reset Password</h3>
-    <input id="forgotEmail" type="email" placeholder="Email Address" style="width:100%;padding:12px;border:1px solid #e8ddd0;margin:10px 0">
+    <h1 class="play" style="letter-spacing:6px;font-size:20px;color:var(--burgundy)">E_FITS</h1>
+    <h3 style="margin-top:8px">Reset Password</h3>
+    <input id="forgotEmail" type="email" placeholder="Email Address" style="width:100%;padding:12px;border:1px solid #e8ddd0;margin:12px 0">
     <button class="btn" onclick="sendReset()">SEND RESET LINK</button>
-    <p style="font-size:11px;text-align:center;margin-top:10px;cursor:pointer;text-decoration:underline;color:#9a8a7a" onclick="closeForgot()">Back to login</p>
+    <p style="font-size:11px;text-align:center;margin-top:10px;cursor:pointer;text-decoration:underline;color:var(--muted)" onclick="closeForgot()">Back to login</p>
   </div>
+</div>
+
+<div id="brandToast" class="toast">
+  <h4 class="play">E_FITS</h4>
+  <p id="toastMsg">Reset link sent</p>
+  <button class="btn" style="margin-top:12px;padding:10px" onclick="closeToast()">OK</button>
 </div>
 
 <button class="chat-btn" onclick="toggleChat()"><i class="fa-regular fa-comment-dots"></i></button>
 <div id="chatPanel" class="chat-panel">
   <div class="chat-head"><h4>E_FITS Support</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="toggleChat()"></i></div>
-  <div id="chatBody" class="chat-body"><div class="msg bot">Hi! Welcome to E_FITS 💜 How can we help?</div></div>
+  <div id="chatBody" class="chat-body">
+    <div class="msg bot">Hi! Welcome to E_FITS 💜</div>
+    <div class="msg bot">How can we help? Chat is inside the app.</div>
+  </div>
   <div class="chat-input">
     <input id="chatInput" placeholder="Type message..." onkeydown="if(event.key==='Enter')sendMsg()">
     <button onclick="sendMsg()"><i class="fa-solid fa-paper-plane"></i></button>
@@ -116,12 +156,15 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh}
 let tab='login';
 function switchTab(t){tab=t;document.getElementById('tLogin').classList.toggle('active',t==='login');document.getElementById('tSignup').classList.toggle('active',t==='signup');document.getElementById('signupExtra').style.display=t==='signup'?'block':'none';}
 function toggleEye(id,iconId){let i=document.getElementById(id);let ic=document.getElementById(iconId);if(i.type==='password'){i.type='text';ic.className='fa-regular fa-eye-slash';}else{i.type='password';ic.className='fa-regular fa-eye';}}
-function enterBoutique(){let e=document.getElementById('email').value.trim();let p=document.getElementById('password').value;if(!e||!p){alert('Put email and password');return}if(tab==='signup'){let c=document.getElementById('confirm').value;if(p!==c){alert('Passwords no match');return}}document.getElementById('auth').style.display='none';document.getElementById('shop').classList.add('active');}
+function enterBoutique(){let e=document.getElementById('email').value.trim();let p=document.getElementById('password').value;if(!e||!p){showBrandToast('Please enter email and password');return}if(tab==='signup'){let c=document.getElementById('confirm').value;if(p!==c){showBrandToast('Passwords do not match');return}}document.getElementById('auth').style.display='none';document.getElementById('shop').classList.add('active');}
 function openForgot(){document.getElementById('forgotModal').classList.add('show')}
 function closeForgot(){document.getElementById('forgotModal').classList.remove('show')}
-function sendReset(){let e=document.getElementById('forgotEmail').value.trim();if(!e){alert('Put email');return}alert('Reset link sent to '+e);closeForgot()}
+function sendReset(){let e=document.getElementById('forgotEmail').value.trim();if(!e){showBrandToast('Please enter your email');return}closeForgot();showBrandToast('Reset link sent to ' + e);}
+function showBrandToast(msg){document.getElementById('toastMsg').textContent=msg;document.getElementById('brandToast').classList.add('show');}
+function closeToast(){document.getElementById('brandToast').classList.remove('show')}
 function toggleChat(){document.getElementById('chatPanel').classList.toggle('open')}
-function sendMsg(){let input=document.getElementById('chatInput');let txt=input.value.trim();if(!txt)return;let body=document.getElementById('chatBody');let d=document.createElement('div');d.className='msg user';d.textContent=txt;body.appendChild(d);input.value='';body.scrollTop=body.scrollHeight;setTimeout(()=>{let r=document.createElement('div');r.className='msg bot';r.textContent='Thanks! We don receive am. Team go reply on WhatsApp/email soon.';body.appendChild(r);body.scrollTop=body.scrollHeight;},800);window.open('mailto:shop.efits@gmail.com?subject=New E_FITS Chat - '+encodeURIComponent(txt)+'&body=From: '+(localStorage.getItem('efits_user')||'guest')+'%0A%0A'+encodeURIComponent(txt));}
+function toggleNotif(){document.getElementById('notifPanel').classList.toggle('open')}
+function sendMsg(){let input=document.getElementById('chatInput');let txt=input.value.trim();if(!txt)return;let body=document.getElementById('chatBody');let d=document.createElement('div');d.className='msg user';d.textContent=txt;body.appendChild(d);input.value='';body.scrollTop=body.scrollHeight;let msgs=JSON.parse(localStorage.getItem('efits_chats')||'[]');msgs.push({msg:txt,time:new Date().toISOString()});localStorage.setItem('efits_chats',JSON.stringify(msgs));setTimeout(()=>{let r=document.createElement('div');r.className='msg bot';r.textContent='Got it! Our team go reply you here inside the app shortly.';body.appendChild(r);body.scrollTop=body.scrollHeight;},700);}
 </script>
 </body>
 </html>
