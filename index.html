@@ -116,11 +116,10 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
   <div style="background:var(--cream);border-top:1px solid var(--line);padding:26px 18px;text-align:center;margin-top:10px"><div style="display:flex;justify-content:center;gap:16px"><a href="https://instagram.com/shop_e_fits" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-instagram"></i></a><a href="https://vm.tiktok.com/ZS9ycW9j823LR-wAEjt/" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-tiktok"></i></a><a href="mailto:shop.efits@gmail.com" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none"><i class="fa-solid fa-envelope"></i></a><a href="https://wa.me/2349066069350" target="_blank" style="width:44px;height:44px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none"><i class="fa-brands fa-whatsapp"></i></a></div></div>
 </div>
 
-<div id="overlay" class="overlay" onclick="closeAllPanels()"></div>
+<div id="overlay" class="overlay" onclick="if(!document.getElementById('checkoutPanel').classList.contains('open')) closeAllPanels()"></div>
 
 <div id="productModal" class="modal" onclick="if(event.target==this)closeProduct()"><div class="modal-box" style="max-width:380px"><img id="pImg" style="width:100%;aspect-ratio:4/5;object-fit:cover"><div style="padding:16px"><h3 id="pName" class="play"></h3><p id="pPrice" style="color:var(--muted);margin:6px 0"></p><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="addToCartFromModal()">ADD TO BAG</button><button style="width:46px;border:1px solid var(--line);background:#fff;cursor:pointer" onclick="toggleFavFromModal()"><i id="modalHeart" class="fa-regular fa-heart"></i></button></div></div></div></div>
 
-<!-- CART PANEL -->
 <div id="cartPanel" class="panel">
   <div class="panel-head"><h4>Your Bag - <span id="cartCountHead">0 items</span></h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCart()"></i></div>
   <div id="cartBody" class="panel-body"></div>
@@ -130,7 +129,6 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
   </div>
 </div>
 
-<!-- PAYMENT PANEL - NEW SLIDE PANEL NOT MODAL -->
 <div id="checkoutPanel" class="panel" style="z-index:85">
   <div class="panel-head"><h4>Payment Options</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCheckout()"></i></div>
   <div class="panel-body" style="background:#fff">
@@ -138,27 +136,26 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
     <div id="checkoutSummary" style="background:var(--beige);padding:10px;margin-bottom:16px;font-size:11px;line-height:1.6"></div>
     <h5 style="font-size:11px;letter-spacing:2px;margin-bottom:10px">CHOOSE PAYMENT - TAP TO SELECT</h5>
     
-    <div id="optWallet" class="pay-option" onclick="selectPay('wallet')"><div><i class="fa-solid fa-wallet"></i> Wallet <small>Bal: ₦<span id="walletBalText">0.00</span></small></div><i class="fa-regular fa-circle" id="checkWallet"></i></div>
-    <div id="detailWallet" class="pay-details"><p style="font-size:11px">Pay instantly with wallet balance</p><button class="btn" style="margin-top:10px" onclick="payWallet()">PAY WITH WALLET</button></div>
+    <div id="optWallet" class="pay-option" onclick="event.stopPropagation();selectPay('wallet')"><div><i class="fa-solid fa-wallet"></i> Wallet <small>Bal: ₦<span id="walletBalText">0.00</span></small></div><i class="fa-regular fa-circle" id="checkWallet"></i></div>
+    <div id="detailWallet" class="pay-details"><p style="font-size:11px">Pay instantly with wallet balance</p><button class="btn" style="margin-top:10px" onclick="event.stopPropagation();payWallet()">PAY WITH WALLET</button></div>
 
-    <div id="optTransfer" class="pay-option" onclick="selectPay('transfer')"><div><i class="fa-solid fa-building-columns"></i> Bank Transfer</div><i class="fa-regular fa-circle" id="checkTransfer"></i></div>
+    <div id="optTransfer" class="pay-option" onclick="event.stopPropagation();selectPay('transfer')"><div><i class="fa-solid fa-building-columns"></i> Bank Transfer</div><i class="fa-regular fa-circle" id="checkTransfer"></i></div>
     <div id="detailTransfer" class="pay-details">
       <div style="background:var(--beige);padding:12px;font-size:12px;line-height:1.9">
         <div>Bank: <b>OPay</b></div>
-        <div>Acct No: <b id="acctNum">9066069350</b> <button class="copy-btn" onclick="copyAcct()">COPY</button></div>
+        <div>Acct No: <b id="acctNum">9066069350</b> <button class="copy-btn" onclick="event.stopPropagation();copyAcct()">COPY</button></div>
         <div>Name: <b>E_FITS</b></div>
         <div>Amount: <b id="transferAmt">₦0</b></div>
       </div>
-      <p style="font-size:10px;color:var(--muted);margin-top:6px">Copy account number and transfer, then click below</p>
-      <button class="btn" style="margin-top:10px" onclick="payTransfer()">I HAVE TRANSFERRED</button>
+      <button class="btn" style="margin-top:10px" onclick="event.stopPropagation();payTransfer()">I HAVE TRANSFERRED</button>
     </div>
 
-    <div id="optCard" class="pay-option" onclick="selectPay('card')"><div><i class="fa-regular fa-credit-card"></i> Debit Card</div><i class="fa-regular fa-circle" id="checkCard"></i></div>
+    <div id="optCard" class="pay-option" onclick="event.stopPropagation();selectPay('card')"><div><i class="fa-regular fa-credit-card"></i> Debit Card</div><i class="fa-regular fa-circle" id="checkCard"></i></div>
     <div id="detailCard" class="pay-details">
-      <input id="cardNumber" class="card-input" placeholder="Card Number 1234 5678 9012 3456" maxlength="19" oninput="formatCard()">
-      <div style="display:flex;gap:8px"><input id="cardExpiry" class="card-input" placeholder="MM/YY"><input id="cardCvv" class="card-input" placeholder="CVV"></div>
-      <input id="cardName" class="card-input" placeholder="Name on Card">
-      <button class="btn" style="margin-top:8px" onclick="payCard()">PAY WITH CARD</button>
+      <input id="cardNumber" class="card-input" placeholder="Card Number" maxlength="19" oninput="formatCard()" onclick="event.stopPropagation()">
+      <div style="display:flex;gap:8px"><input id="cardExpiry" class="card-input" placeholder="MM/YY" onclick="event.stopPropagation()"><input id="cardCvv" class="card-input" placeholder="CVV" onclick="event.stopPropagation()"></div>
+      <input id="cardName" class="card-input" placeholder="Name on Card" onclick="event.stopPropagation()">
+      <button class="btn" style="margin-top:8px" onclick="event.stopPropagation();payCard()">PAY WITH CARD</button>
     </div>
   </div>
 </div>
@@ -283,10 +280,10 @@ function removeCart(id){cart=cart.filter(x=>x.id!==id);localStorage.setItem('efi
 function openCart(){renderCart();document.getElementById('cartPanel').classList.add('open');document.getElementById('overlay').classList.add('show');}
 function closeCart(){document.getElementById('cartPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
 function closeAllPanels(){
+  if(document.getElementById('checkoutPanel').classList.contains('open')){return;}
   document.getElementById('cartPanel').classList.remove('open');
   document.getElementById('favPanel').classList.remove('open');
   document.getElementById('walletPanel').classList.remove('open');
-  document.getElementById('checkoutPanel').classList.remove('open');
   document.getElementById('overlay').classList.remove('show');
 }
 function toggleFav(id){if(favs.includes(id))favs=favs.filter(x=>x!==id);else favs.push(id);localStorage.setItem('efits_favs',JSON.stringify(favs));renderProducts();renderFavs();showBrandToast(favs.includes(id)?'Added to favourites':'Removed');}
@@ -304,7 +301,6 @@ function openCheckout(){
   let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);
   document.getElementById('checkoutSummary').innerHTML=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty} = ₦${(p.price*c.qty).toLocaleString()}`}).join('<br>')+`<br><br><b>Total: ₦${total.toLocaleString()}</b>`;
   document.getElementById('transferAmt').textContent='₦'+total.toLocaleString();
-  // FIXED: Close cart and open checkout panel directly
   document.getElementById('cartPanel').classList.remove('open');
   document.getElementById('checkoutPanel').classList.add('open');
   document.getElementById('overlay').classList.add('show');
