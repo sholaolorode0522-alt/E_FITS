@@ -347,4 +347,74 @@ function updatePrintUI(){
   let colors=currentProduct.colors||[];
   let total=(currentProduct.gallery||[]).length;
   document.getElementById('pColor').textContent='Selected Print: '+(colors[selectedPrint]||'Print '+(selectedPrint+1))+' ('+(selectedPrint+1)+' of '+total+')';
-  document
+  document.getElementById('swipeHint').textContent= selectedPrint===total-1 ? '✓ LAST PRINT - SCROLL DOWN FOR DETAILS OR TAP X TO GO BACK' : '↑ SWIPE UP FOR MORE PRINTS - '+(selectedPrint+1)+' OF '+total+' ↑';
+  // Print dots
+  let dotsWrap=document.getElementById('printDots'); dotsWrap.innerHTML='';
+  let dotColors=['#3a1414','#1e3a8a','#b45309','#15803d','#7c3aed','#be185d'];
+  (currentProduct.gallery||[]).forEach((_,i)=>{
+    let d=document.createElement('div'); d.className='print-dot'+(i===selectedPrint?' active':''); d.style.background=dotColors[i%dotColors.length]; d.title=colors[i]||'Print '+(i+1);
+    d.onclick=()=>{ selectedPrint=i; currentImgIndex=i; document.getElementById('galleryWrap').scrollTo({top:i*480,behavior:'smooth'}); updatePrintUI(); };
+    dotsWrap.appendChild(d);
+  });
+}
+function closeProduct(){document.getElementById('productModal').classList.remove('show');unlockScroll();}
+function quickAdd(id){addToCart(id);showBrandToast('Added to bag');}
+function addToCartFromModal(){
+  // Add with selected print info
+  addToCart(currentProduct.id);
+  let colors=currentProduct.colors||[];
+  showBrandToast('Added to bag - '+(colors[selectedPrint]||'Print '+(selectedPrint+1)));
+}
+function addToCart(id){let ex=cart.find(x=>x.id===id);if(ex)ex.qty++;else cart.push({id,qty:1});localStorage.setItem('efits_cart',JSON.stringify(cart));renderProducts();renderCart();}
+function renderCart(){let body=document.getElementById('cartBody');body.innerHTML='';let total=0;let count=0;if(cart.length===0){body.innerHTML='<p style="font-size:12px;color:#9a8a7a;text-align:center;margin-top:30px">Your bag is empty</p>';document.getElementById('cartCountHead').textContent='0 items';}else{cart.forEach(c=>{let p=products.find(x=>x.id===c.id);total+=p.price*c.qty;count+=c.qty;let div=document.createElement('div');div.className='item';div.innerHTML=`<img src="${p.img}"><div style="flex:1"><h4 style="font-size:11px">${p.name}</h4><p style="font-size:11px;color:#9a8a7a">Qty: ${c.qty} • ₦${p.price.toLocaleString()}</p><div style="display:flex;gap:6px;margin-top:4px"><button style="font-size:10px;padding:2px 6px;border:1px solid #e8ddd0;background:#fff" onclick="changeQty(${c.id},-1)">-</button><span style="font-size:11px">${c.qty}</span><button style="font-size:10px;padding:2px 6px;border:1px solid #e8ddd0;background:#fff" onclick="changeQty(${c.id},1)">+</button></div></div><i class="fa-solid fa-xmark" style="cursor:pointer;padding:8px" onclick="removeCart(${c.id})"></i>`;body.appendChild(div);});document.getElementById('cartCountHead').textContent=count+' items';}document.getElementById('cartTotal').textContent='₦'+total.toLocaleString();updateBadges();}
+function changeQty(id,delta){let ex=cart.find(x=>x.id===id);if(!ex)return;ex.qty+=delta;if(ex.qty<=0){removeCart(id);return}localStorage.setItem('efits_cart',JSON.stringify(cart));renderCart();}
+function removeCart(id){cart=cart.filter(x=>x.id!==id);localStorage.setItem('efits_cart',JSON.stringify(cart));renderCart();renderProducts();}
+function openCart(){renderCart();document.getElementById('cartPanel').classList.add('open');document.getElementById('overlay').classList.add('show');document.getElementById('overlay').onclick=closeAllPanels;lockScroll();}
+function closeCart(){document.getElementById('cartPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');unlockScroll();}
+function closeAllPanels(){document.getElementById('cartPanel').classList.remove('open');document.getElementById('favPanel').classList.remove('open');document.getElementById('walletPanel').classList.remove('open');document.getElementById('profilePanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');unlockScroll();}
+function toggleFav(id){if(favs.includes(id))favs=favs.filter(x=>x!==id);else favs.push(id);localStorage.setItem('efits_favs',JSON.stringify(favs));renderProducts();renderFavs();}
+function toggleFavFromModal(){toggleFav(currentProduct.id);let isFav=favs.includes(currentProduct.id);document.getElementById('modalHeart').className=(isFav?'fa-solid':'fa-regular')+' fa-heart';}
+function renderFavs(){let body=document.getElementById('favBody');body.innerHTML='';if(favs.length===0){body.innerHTML='<p style="text-align:center;margin-top:20px;font-size:12px">No favourites</p>';return}favs.forEach(id=>{let p=products.find(x=>x.id===id);let div=document.createElement('div');div.className='item';div.innerHTML=`<img src="${p.img}"><div style="flex:1"><h4 style="font-size:11px">${p.name}</h4><p>₦${p.price.toLocaleString()}</p></div><i class="fa-solid fa-xmark" onclick="toggleFav(${p.id})"></i>`;body.appendChild(div);});}
+function openFavs(){renderFavs();document.getElementById('favPanel').classList.add('open');document.getElementById('overlay').classList.add('show');document.getElementById('overlay').onclick=closeAllPanels;lockScroll();}
+function closeFavs(){document.getElementById('favPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');unlockScroll();}
+function openWallet(){updateWalletUI();document.getElementById('walletPanel').classList.add('open');document.getElementById('overlay').classList.add('show');document.getElementById('overlay').onclick=closeAllPanels;lockScroll();}
+function closeWallet(){document.getElementById('walletPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');unlockScroll();}
+function updateWalletUI(){document.getElementById('walletBal').textContent='₦'+walletBalance.toLocaleString()+'.00';document.getElementById('walletBalText').textContent=walletBalance.toLocaleString()+'.00';}
+function addFunds(){walletBalance+=5000;localStorage.setItem('efits_wallet',walletBalance);updateWalletUI();showBrandToast('₦5,000 added!');}
+function updateBadges(){let totalQty=cart.reduce((s,x)=>s+x.qty,0);let cb=document.getElementById('cartBadge');cb.style.display=totalQty?'flex':'none';cb.textContent=totalQty;let fb=document.getElementById('favBadge');fb.style.display=favs.length?'flex':'none';fb.textContent=favs.length;}
+function openCheckout(){
+  if(cart.length===0){showBrandToast('Bag empty');return}
+  let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);
+  document.getElementById('checkoutSummary').innerHTML=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty} = ₦${(p.price*c.qty).toLocaleString()}`}).join('<br>')+`<br><br><b>Total: ₦${total.toLocaleString()}</b>`;
+  document.getElementById('transferAmt').textContent='₦'+total.toLocaleString();
+  document.getElementById('registeredAddrText').textContent=currentUser && currentUser.address ? currentUser.address : 'No address saved - go to Profile to add';
+  document.getElementById('cartPanel').classList.remove('open');
+  document.getElementById('checkoutPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('overlay').onclick=null;
+  updateWalletUI();
+}
+function closeCheckout(){document.getElementById('checkoutPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');document.getElementById('overlay').onclick=closeAllPanels;unlockScroll();}
+function selectPay(type){
+  document.getElementById('optWallet').classList.remove('active');
+  document.getElementById('optTransfer').classList.remove('active');
+  document.getElementById('optCard').classList.remove('active');
+  document.getElementById('detailWallet').classList.remove('show');
+  document.getElementById('detailTransfer').classList.remove('show');
+  document.getElementById('detailCard').classList.remove('show');
+  document.getElementById('checkWallet').className='fa-regular fa-circle';
+  document.getElementById('checkTransfer').className='fa-regular fa-circle';
+  document.getElementById('checkCard').className='fa-regular fa-circle';
+  document.getElementById('opt'+type.charAt(0).toUpperCase()+type.slice(1)).classList.add('active');
+  document.getElementById('detail'+type.charAt(0).toUpperCase()+type.slice(1)).classList.add('show');
+  document.getElementById('check'+type.charAt(0).toUpperCase()+type.slice(1)).className='fa-solid fa-circle-check';
+}
+function copyAcct(){let num=document.getElementById('acctNum').textContent;navigator.clipboard.writeText(num);showBrandToast('Copied: '+num);}
+function payWallet(){let addr=getDeliveryAddress();if(!addr)return;let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);if(walletBalance<total){showBrandToast('Insufficient balance');return}walletBalance-=total;localStorage.setItem('efits_wallet',walletBalance);updateWalletUI();completeOrder('Wallet',addr);}
+function payTransfer(){let addr=getDeliveryAddress();if(!addr)return;completeOrder('Bank Transfer 9066069350',addr);}
+function payCard(){let addr=getDeliveryAddress();if(!addr)return;let num=document.getElementById('cardNumber').value.trim();if(num.replace(/\s/g,'').length<16){showBrandToast('Invalid card');return}completeOrder('Card '+num.slice(-4),addr);}
+function completeOrder(method,addr){let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);let text=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty}`}).join('%0A');closeCheckout();showBrandToast('Payment successful via '+method);let msg=`Hi E_FITS, I just paid via ${method}!%0AOrder:%0A${text}%0ATotal: ₦${total}%0ADelivery to: ${addr}`;setTimeout(()=>window.open('https://wa.me/2349066069350?text='+msg,'_blank'),800);cart=[];localStorage.setItem('efits_cart',JSON.stringify(cart));renderProducts();renderCart();}
+function formatCard(){let i=document.getElementById('cardNumber');let v=i.value.replace(/\D/g,'').slice(0,16);let f=v.replace(/(.{4})/g,'$1 ').trim();i.value=f;}
+</script>
+</body>
+</html>
