@@ -61,7 +61,7 @@ html.logged-in #shop{display:block !important}
 .card .info .row{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
 .card .info p{font-size:12px;color:var(--muted)}
 .card .add{font-size:10px;background:var(--burgundy);color:var(--cream);border:none;padding:4px 8px;cursor:pointer}
-.print-badge{position:absolute;left:8px;bottom:8px;background:rgba(58,20,20,.92);color:#fff;font-size:9px;letter-spacing:.5px;padding:5px 7px;border-radius:20px;z-index:2;display:flex;align-items:center;gap:4px}
+.print-mini{display:inline-block;background:var(--beige);border:1px solid var(--line);color:var(--burgundy);font-size:9px;letter-spacing:.3px;padding:3px 7px;border-radius:20px;margin-top:4px;font-weight:600}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:79;display:none}
 .overlay.show{display:block}
 .panel{position:fixed;top:0;right:0;width:360px;max-width:92vw;height:100dvh;background:#fff;z-index:80;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column}
@@ -74,7 +74,6 @@ html.logged-in #shop{display:block !important}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:12px;overscroll-behavior:contain}
 .modal.show{display:flex}
 .modal-box{background:var(--cream);width:100%;max-width:380px;max-height:92dvh;display:flex;flex-direction:column;overflow:hidden;position:relative;border-radius:8px}
-/* FIXED FORGOT MODAL - should not use product layout */
 #forgotModal .modal-box{height:auto;display:block;padding:24px;text-align:center}
 .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--cream);border:1px solid var(--line);padding:20px;width:90%;max-width:340px;z-index:200;display:none;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center}
 .toast.show{display:block}
@@ -90,8 +89,7 @@ html.logged-in #shop{display:block !important}
 .addr-option{border:1px solid var(--line);background:#fff;padding:12px;margin-bottom:8px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
 .addr-option.active{border-color:var(--burgundy);background:var(--beige)}
 .close-btn{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.95);border:none;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--burgundy);cursor:pointer;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.2)}
-/* FULL PICTURE + SWIPE LEFT - NO HEAD CUT, NO EMPTY SPACE */
-.gallery-wrap{display:flex;flex-direction:row;height:380px;flex:0 0 380px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:#f0ece6;scrollbar-width:none}
+.gallery-wrap{display:flex;flex-direction:row;height:380px;flex:0 0 380px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:#f0ece6;scrollbar-width:none;position:relative}
 .gallery-wrap::-webkit-scrollbar{display:none}
 .gallery-wrap.single{overflow:hidden}
 .gallery-item{min-width:100%;width:100%;height:100%;scroll-snap-align:start;position:relative;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f0ece6}
@@ -102,6 +100,8 @@ html.logged-in #shop{display:block !important}
 .product-info{flex:0 0 auto;display:flex;flex-direction:column;padding:10px 14px 12px}
 .print-dot{width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;flex-shrink:0}
 .print-dot.active{border-color:var(--burgundy);transform:scale(1.15)}
+/* SMALL SWIPE ARROWS - small, soft, not blocking */
+.mini-arrow{position:absolute;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.85);border:none;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--burgundy);cursor:pointer;z-index:6;box-shadow:0 1px 6px rgba(0,0,0,.15);opacity:.9}
 </style>
 </head>
 <body>
@@ -140,11 +140,14 @@ html.logged-in #shop{display:block !important}
 
 <div id="overlay" class="overlay"></div>
 
-<!-- PRODUCT MODAL - FULL PICTURE + SWIPE LEFT -->
 <div id="productModal" class="modal" onclick="if(event.target==this)closeProduct()">
   <div class="modal-box" id="productBox">
     <button class="close-btn" onclick="closeProduct()" title="Back">✕</button>
-    <div class="gallery-wrap" id="galleryWrap"></div>
+    <div style="position:relative">
+      <div class="gallery-wrap" id="galleryWrap"></div>
+      <button id="arrowLeft" class="mini-arrow" style="left:8px" onclick="swipeGallery(-1)">‹</button>
+      <button id="arrowRight" class="mini-arrow" style="right:8px" onclick="swipeGallery(1)">›</button>
+    </div>
     <p class="swipe-hint" id="swipeHint">← SWIPE LEFT FOR MORE PRINTS →</p>
     <div class="product-info">
       <h3 id="pName" class="play" style="font-size:19px;line-height:1.2"></h3>
@@ -306,16 +309,15 @@ function renderProducts(){
   products.forEach(p=>{
     let isFav=favs.includes(p.id);
     let galleryCount=(p.gallery||[]).length;
-    let printBadge=galleryCount>1?`<div class="print-badge">🎨 Available in ${galleryCount} Prints • Tap to view</div>`:'';
+    // ONLY ONE small badge inside details box - no overlay on picture, no duplicate
+    let printMini=galleryCount>1?`<div><span class="print-mini">✓ Available in ${galleryCount} Prints</span></div>`:'';
     let div=document.createElement('div');div.className='card';
-    div.innerHTML=`<button class="fav-btn" onclick="event.stopPropagation();toggleFav(${p.id})"><i class="${isFav?'fa-solid':'fa-regular'} fa-heart"></i></button><img src="${p.img}">${printBadge}<div class="info"><h4>${p.name}</h4><p style="font-size:10px;color:#15803d;font-weight:600;margin-top:2px">${galleryCount>1?'✓ Available in different prints':''}</p><div class="row"><p>₦${p.price.toLocaleString()}</p><button class="add" onclick="event.stopPropagation();quickAdd(${p.id})">ADD</button></div></div>`;
+    div.innerHTML=`<button class="fav-btn" onclick="event.stopPropagation();toggleFav(${p.id})"><i class="${isFav?'fa-solid':'fa-regular'} fa-heart"></i></button><img src="${p.img}"><div class="info"><h4>${p.name}</h4>${printMini}<div class="row"><p>₦${p.price.toLocaleString()}</p><button class="add" onclick="event.stopPropagation();quickAdd(${p.id})">ADD</button></div></div>`;
     div.onclick=()=>openProduct(p.id);
     wrap.appendChild(div);
   });
   updateBadges();
 }
-
-// --- FULL PICTURE + SWIPE LEFT ---
 function openProduct(id){
   currentProduct=products.find(x=>x.id===id); selectedPrint=0; currentImgIndex=0;
   document.getElementById('pName').textContent=currentProduct.name;
@@ -325,8 +327,8 @@ function openProduct(id){
   let wrap=document.getElementById('galleryWrap'); wrap.innerHTML='';
   let imgs=currentProduct.gallery||[currentProduct.img];
   let colors=currentProduct.colors||[];
-  if(imgs.length<=1){ wrap.classList.add('single'); document.getElementById('swipeHint').style.display='none'; }
-  else { wrap.classList.remove('single'); document.getElementById('swipeHint').style.display='block'; }
+  if(imgs.length<=1){ wrap.classList.add('single'); document.getElementById('swipeHint').style.display='none'; document.getElementById('arrowLeft').style.display='none'; document.getElementById('arrowRight').style.display='none'; }
+  else { wrap.classList.remove('single'); document.getElementById('swipeHint').style.display='block'; document.getElementById('arrowLeft').style.display='flex'; document.getElementById('arrowRight').style.display='flex'; }
   imgs.forEach((src,i)=>{
     let item=document.createElement('div'); item.className='gallery-item';
     item.innerHTML=`<img src="${src}"><div class="gallery-counter">${i+1} / ${imgs.length}</div><div class="gallery-label">${colors[i]||'Print '+(i+1)} ${i===imgs.length-1?'• Last Print':''}</div>`;
@@ -346,6 +348,16 @@ function openProduct(id){
   wrap.scrollLeft=0;
   lockScroll();
 }
+function swipeGallery(dir){
+  let wrap=document.getElementById('galleryWrap');
+  let total=(currentProduct.gallery||[]).length;
+  let next=selectedPrint+dir;
+  if(next<0) next=0;
+  if(next>=total) next=total-1;
+  selectedPrint=next; currentImgIndex=next;
+  wrap.scrollTo({left:next*wrap.clientWidth,behavior:'smooth'});
+  updatePrintUI();
+}
 function updatePrintUI(){
   let colors=currentProduct.colors||[];
   let total=(currentProduct.gallery||[]).length;
@@ -361,6 +373,11 @@ function updatePrintUI(){
     d.onclick=()=>{ selectedPrint=i; currentImgIndex=i; document.getElementById('galleryWrap').scrollTo({left:i*document.getElementById('galleryWrap').clientWidth,behavior:'smooth'}); updatePrintUI(); };
     dotsWrap.appendChild(d);
   });
+  // Hide left arrow on first, right arrow on last - so it stays clean
+  if(total>1){
+    document.getElementById('arrowLeft').style.opacity= selectedPrint===0 ? '0.35' : '0.9';
+    document.getElementById('arrowRight').style.opacity= selectedPrint===total-1 ? '0.35' : '0.9';
+  }
 }
 function closeProduct(){document.getElementById('productModal').classList.remove('show');unlockScroll();}
 function quickAdd(id){addToCart(id);showBrandToast('Added to bag');}
