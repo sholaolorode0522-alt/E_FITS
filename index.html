@@ -71,9 +71,9 @@ html.logged-in #shop{display:block !important}
 .panel-foot{padding:14px;padding-bottom:34px;border-top:1px solid var(--line);background:#fff;flex-shrink:0;position:sticky;bottom:0}
 .item{display:flex;gap:10px;background:#fff;border:1px solid var(--line);padding:8px;margin-bottom:8px;align-items:center}
 .item img{width:56px;height:70px;object-fit:cover;flex-shrink:0}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:16px;overscroll-behavior:contain}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:12px;overscroll-behavior:contain}
 .modal.show{display:flex}
-.modal-box{background:var(--cream);width:100%;max-width:380px;max-height:88dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;position:relative;border-radius:4px;touch-action:pan-y}
+.modal-box{background:var(--cream);width:100%;max-width:380px;height:88dvh;max-height:640px;display:flex;flex-direction:column;overflow:hidden;position:relative;border-radius:8px}
 .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--cream);border:1px solid var(--line);padding:20px;width:90%;max-width:340px;z-index:200;display:none;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center}
 .toast.show{display:block}
 .pay-option{border:2px solid var(--line);background:#fff;padding:14px;margin-bottom:10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
@@ -87,16 +87,18 @@ html.logged-in #shop{display:block !important}
 .profile-row span:last-child{font-weight:600;text-align:right;word-break:break-word}
 .addr-option{border:1px solid var(--line);background:#fff;padding:12px;margin-bottom:8px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
 .addr-option.active{border-color:var(--burgundy);background:var(--beige)}
-.close-btn{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.95);border:none;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--burgundy);cursor:pointer;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.2)}
-/* TIKTOK STYLE - REAL SCROLL, NO ARROWS */
-.gallery-wrap{height:480px;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:#eee;scrollbar-width:none}
+.close-btn{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.95);border:none;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--burgundy);cursor:pointer;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+/* COMPRESSED ONE-SCREEN LAYOUT - ONLY PICTURE SCROLLS */
+.gallery-wrap{flex:0 0 48%;height:48%;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:#eee;scrollbar-width:none}
 .gallery-wrap::-webkit-scrollbar{display:none}
-.gallery-item{height:480px;scroll-snap-align:start;position:relative;flex-shrink:0}
+.gallery-wrap.single{overflow:hidden}
+.gallery-item{height:100%;scroll-snap-align:start;position:relative;flex-shrink:0}
 .gallery-item img{width:100%;height:100%;object-fit:cover}
 .gallery-label{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;padding:6px 10px;border-radius:20px}
 .gallery-counter{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:5px 9px;border-radius:20px}
-.swipe-hint{text-align:center;font-size:11px;color:var(--burgundy);letter-spacing:1px;padding:10px;background:var(--beige);font-weight:600}
-.print-dot{width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.swipe-hint{text-align:center;font-size:10px;color:var(--burgundy);letter-spacing:.5px;padding:7px 8px;background:var(--beige);font-weight:600;flex-shrink:0}
+.product-info{flex:1;display:flex;flex-direction:column;padding:10px 14px 12px;overflow:hidden}
+.print-dot{width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;flex-shrink:0}
 .print-dot.active{border-color:var(--burgundy);transform:scale(1.15)}
 </style>
 </head>
@@ -136,21 +138,22 @@ html.logged-in #shop{display:block !important}
 
 <div id="overlay" class="overlay"></div>
 
-<!-- PRODUCT MODAL - TIKTOK SCROLL, NO ARROWS -->
+<!-- PRODUCT MODAL - COMPRESSED ONE SCREEN -->
 <div id="productModal" class="modal" onclick="if(event.target==this)closeProduct()">
   <div class="modal-box" id="productBox">
     <button class="close-btn" onclick="closeProduct()" title="Back">✕</button>
     <div class="gallery-wrap" id="galleryWrap"></div>
     <p class="swipe-hint" id="swipeHint">↑ SWIPE UP FOR MORE PRINTS ↑</p>
-    <div style="padding:8px 16px 16px">
-      <h3 id="pName" class="play"></h3>
-      <p id="pPrice" style="color:var(--muted);margin:6px 0"></p>
-      <p id="pColor" style="font-size:12px;color:var(--burgundy);font-weight:600;margin-bottom:8px"></p>
-      <p style="font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:6px">SELECT PRINT:</p>
-      <div id="printDots" style="display:flex;gap:10px;margin-bottom:10px"></div>
-      <p id="pDesc" style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px"></p>
-      <div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="addToCartFromModal()">ADD TO BAG</button><button style="width:46px;border:1px solid var(--line);background:#fff;cursor:pointer" onclick="toggleFavFromModal()"><i id="modalHeart" class="fa-regular fa-heart"></i></button></div>
-      <button class="btn btn-outline" style="margin-top:10px" onclick="closeProduct()">← BACK TO SHOP</button>
+    <div class="product-info">
+      <h3 id="pName" class="play" style="font-size:19px;line-height:1.2"></h3>
+      <p id="pPrice" style="color:var(--muted);margin:4px 0;font-size:14px"></p>
+      <p id="pColor" style="font-size:11px;color:var(--burgundy);font-weight:600;margin-bottom:6px"></p>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:10px;letter-spacing:1px;color:var(--muted)">SELECT PRINT:</span><div id="printDots" style="display:flex;gap:8px"></div></div>
+      <p id="pDesc" style="font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden"></p>
+      <div style="margin-top:auto">
+        <div style="display:flex;gap:8px"><button class="btn" style="flex:1;padding:12px" onclick="addToCartFromModal()">ADD TO BAG</button><button style="width:44px;border:1px solid var(--line);background:#fff;cursor:pointer;flex-shrink:0" onclick="toggleFavFromModal()"><i id="modalHeart" class="fa-regular fa-heart"></i></button></div>
+        <button class="btn btn-outline" style="margin-top:8px;padding:11px" onclick="closeProduct()">← BACK TO SHOP</button>
+      </div>
     </div>
   </div>
 </div>
@@ -160,7 +163,7 @@ html.logged-in #shop{display:block !important}
 <div id="checkoutPanel" class="panel" style="z-index:90"><div class="panel-head"><h4>Payment Options</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCheckout()"></i></div><div class="panel-body" style="background:#fff"><h5 style="font-size:11px;letter-spacing:2px;margin-bottom:8px">ORDER SUMMARY</h5><div id="checkoutSummary" style="background:var(--beige);padding:10px;margin-bottom:16px;font-size:11px;line-height:1.6"></div><h5 style="font-size:11px;letter-spacing:2px;margin-bottom:8px">DELIVERY ADDRESS</h5><p style="font-size:12px;margin-bottom:10px">Is your registered address your delivery address?</p><div id="addrSame" class="addr-option active" onclick="selectAddress('same')"><span style="font-size:16px">✓</span><div><b>Yes, use my registered address</b><p id="registeredAddrText" style="font-size:11px;color:var(--muted);margin-top:2px">No address saved</p></div></div><div id="addrDiff" class="addr-option" onclick="selectAddress('diff')"><span style="font-size:16px">○</span><div><b>No, use a different address</b><p style="font-size:11px;color:var(--muted);margin-top:2px">Enter a new delivery address below</p></div></div><div id="diffAddrBox" style="display:none;margin-bottom:16px"><textarea id="deliveryAddressInput" placeholder="Enter delivery address - e.g. 5 Lekki Phase 1, Lagos" style="width:100%;padding:12px;border:1px solid var(--line);min-height:64px;font-family:Inter"></textarea></div><h5 style="font-size:11px;letter-spacing:2px;margin-bottom:10px">TAP TO SELECT PAYMENT</h5><div id="optWallet" class="pay-option" onclick="selectPay('wallet')"><div><i class="fa-solid fa-wallet"></i> Wallet Bal: ₦<span id="walletBalText">0.00</span></div><i id="checkWallet" class="fa-regular fa-circle"></i></div><div id="detailWallet" class="pay-details"><button class="btn" onclick="payWallet()">PAY WITH WALLET</button></div><div id="optTransfer" class="pay-option" onclick="selectPay('transfer')"><div><i class="fa-solid fa-building-columns"></i> Bank Transfer</div><i id="checkTransfer" class="fa-regular fa-circle"></i></div><div id="detailTransfer" class="pay-details"><div style="background:var(--beige);padding:12px;font-size:12px;line-height:1.9"><div>Bank: <b>OPay</b></div><div>Acct: <b id="acctNum">9066069350</b> <button class="copy-btn" onclick="copyAcct()">COPY</button></div><div>Name: <b>E_FITS</b></div><div>Amount: <b id="transferAmt">₦0</b></div></div><button class="btn" style="margin-top:10px" onclick="payTransfer()">I HAVE TRANSFERRED</button></div><div id="optCard" class="pay-option" onclick="selectPay('card')"><div><i class="fa-regular fa-credit-card"></i> Debit Card</div><i id="checkCard" class="fa-regular fa-circle"></i></div><div id="detailCard" class="pay-details"><input id="cardNumber" class="card-input" placeholder="Card Number" maxlength="19" oninput="formatCard()"><div style="display:flex;gap:8px"><input id="cardExpiry" class="card-input" placeholder="MM/YY"><input id="cardCvv" class="card-input" placeholder="CVV"></div><input id="cardName" class="card-input" placeholder="Name on Card"><button class="btn" style="margin-top:8px" onclick="payCard()">PAY WITH CARD</button></div></div></div>
 <div id="favPanel" class="panel"><div class="panel-head"><h4>Favourites</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeFavs()"></i></div><div id="favBody" class="panel-body"></div><div class="panel-foot"><button class="btn" onclick="closeFavs()">CONTINUE</button></div></div>
 <div id="walletPanel" class="panel"><div class="panel-head"><h4>My Wallet</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeWallet()"></i></div><div class="panel-body"><div style="background:var(--burgundy);color:var(--cream);padding:20px;text-align:center"><h2 id="walletBal" style="font-size:28px">₦0.00</h2></div><button class="btn" style="margin-top:12px" onclick="addFunds()">ADD FUNDS ₦5000</button></div></div>
-<div id="forgotModal" class="modal"><div class="modal-box" style="padding:24px;text-align:center;max-width:360px;background:var(--cream)"><h3>Reset Password</h3><input id="forgotEmail" type="email" placeholder="Email" style="width:100%;padding:12px;border:1px solid var(--line);margin:12px 0"><button class="btn" onclick="sendReset()">SEND RESET LINK</button><p style="font-size:11px;margin-top:10px;cursor:pointer;text-decoration:underline" onclick="closeForgot()">Back</p></div></div>
+<div id="forgotModal" class="modal"><div class="modal-box" style="padding:24px;text-align:center;max-width:360px;background:var(--cream);height:auto;display:block"><h3>Reset Password</h3><input id="forgotEmail" type="email" placeholder="Email" style="width:100%;padding:12px;border:1px solid var(--line);margin:12px 0"><button class="btn" onclick="sendReset()">SEND RESET LINK</button><p style="font-size:11px;margin-top:10px;cursor:pointer;text-decoration:underline" onclick="closeForgot()">Back</p></div></div>
 <div id="brandToast" class="toast"><h4 class="play">E_FITS</h4><p id="toastMsg"></p><button class="btn" style="margin-top:12px;padding:10px" onclick="closeToast()">OK</button></div>
 
 <script>
@@ -310,7 +313,7 @@ function renderProducts(){
   updateBadges();
 }
 
-// --- TIKTOK SCROLL GALLERY - REAL SCROLL, NO ARROWS ---
+// --- COMPRESSED ONE-SCREEN PRODUCT ---
 function openProduct(id){
   currentProduct=products.find(x=>x.id===id); selectedPrint=0; currentImgIndex=0;
   document.getElementById('pName').textContent=currentProduct.name;
@@ -320,26 +323,25 @@ function openProduct(id){
   let wrap=document.getElementById('galleryWrap'); wrap.innerHTML='';
   let imgs=currentProduct.gallery||[currentProduct.img];
   let colors=currentProduct.colors||[];
+  // If only 1 picture, no scroll
+  if(imgs.length<=1){ wrap.classList.add('single'); document.getElementById('swipeHint').style.display='none'; }
+  else { wrap.classList.remove('single'); document.getElementById('swipeHint').style.display='block'; }
   imgs.forEach((src,i)=>{
     let item=document.createElement('div'); item.className='gallery-item';
     item.innerHTML=`<img src="${src}"><div class="gallery-counter">${i+1} / ${imgs.length}</div><div class="gallery-label">${colors[i]||'Print '+(i+1)} ${i===imgs.length-1?'• Last Print':''}</div>`;
     wrap.appendChild(item);
   });
-  // Update selected print on scroll
   wrap.onscroll=()=>{
-    let idx=Math.round(wrap.scrollTop/480);
+    let itemH=wrap.clientHeight;
+    if(itemH===0) return;
+    let idx=Math.round(wrap.scrollTop/itemH);
     if(idx!==selectedPrint && idx>=0 && idx<imgs.length){
       selectedPrint=idx; currentImgIndex=idx;
       updatePrintUI();
     }
-    // If user scrolls to very bottom past last image, show close hint
-    if(wrap.scrollTop + wrap.clientHeight >= wrap.scrollHeight - 5){
-      document.getElementById('swipeHint').textContent='↓ YOU REACH LAST PRINT - SCROLL DOWN FOR DETAILS OR TAP X TO GO BACK ↓';
-    }
   };
   updatePrintUI();
   document.getElementById('productModal').classList.add('show');
-  document.getElementById('productBox').scrollTop=0;
   wrap.scrollTop=0;
   lockScroll();
 }
@@ -347,20 +349,21 @@ function updatePrintUI(){
   let colors=currentProduct.colors||[];
   let total=(currentProduct.gallery||[]).length;
   document.getElementById('pColor').textContent='Selected Print: '+(colors[selectedPrint]||'Print '+(selectedPrint+1))+' ('+(selectedPrint+1)+' of '+total+')';
-  document.getElementById('swipeHint').textContent= selectedPrint===total-1 ? '✓ LAST PRINT - SCROLL DOWN FOR DETAILS OR TAP X TO GO BACK' : '↑ SWIPE UP FOR MORE PRINTS - '+(selectedPrint+1)+' OF '+total+' ↑';
-  // Print dots
+  let hint=document.getElementById('swipeHint');
+  if(total<=1){ hint.textContent='✓ SINGLE PRINT'; }
+  else if(selectedPrint===total-1){ hint.textContent='✓ LAST PRINT - TAP X OR BACK TO SHOP TO GO BACK'; }
+  else { hint.textContent='↑ SWIPE UP FOR MORE PRINTS - '+(selectedPrint+1)+' OF '+total+' ↑'; }
   let dotsWrap=document.getElementById('printDots'); dotsWrap.innerHTML='';
   let dotColors=['#3a1414','#1e3a8a','#b45309','#15803d','#7c3aed','#be185d'];
   (currentProduct.gallery||[]).forEach((_,i)=>{
     let d=document.createElement('div'); d.className='print-dot'+(i===selectedPrint?' active':''); d.style.background=dotColors[i%dotColors.length]; d.title=colors[i]||'Print '+(i+1);
-    d.onclick=()=>{ selectedPrint=i; currentImgIndex=i; document.getElementById('galleryWrap').scrollTo({top:i*480,behavior:'smooth'}); updatePrintUI(); };
+    d.onclick=()=>{ selectedPrint=i; currentImgIndex=i; document.getElementById('galleryWrap').scrollTo({top:i*document.getElementById('galleryWrap').clientHeight,behavior:'smooth'}); updatePrintUI(); };
     dotsWrap.appendChild(d);
   });
 }
 function closeProduct(){document.getElementById('productModal').classList.remove('show');unlockScroll();}
 function quickAdd(id){addToCart(id);showBrandToast('Added to bag');}
 function addToCartFromModal(){
-  // Add with selected print info
   addToCart(currentProduct.id);
   let colors=currentProduct.colors||[];
   showBrandToast('Added to bag - '+(colors[selectedPrint]||'Print '+(selectedPrint+1)));
