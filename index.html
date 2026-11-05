@@ -6,11 +6,16 @@
 <title>E_FITS</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- NO FLASH FIX: Check login BEFORE page paints -->
+<script>try{if(localStorage.getItem('efits_current')){document.documentElement.className+=' logged-in';}}catch(e){}</script>
 <style>
 :root{--burgundy:#3a1414;--cream:#fdf8f3;--beige:#f5efe6;--muted:#9a8a7a;--line:#e8ddd0;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;overflow-x:hidden}
 .play{font-family:'Playfair Display',serif}
+/* When logged in, hide auth from start - no flash */
+html.logged-in #auth{display:none !important}
+html.logged-in #shop{display:block !important}
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--burgundy)}
 .auth-card{background:var(--cream);width:100%;max-width:420px;padding:36px 28px 28px}
 .logo{text-align:center;margin-bottom:22px}
@@ -20,7 +25,8 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
 .tabs button{flex:1;padding:12px;font-size:13px;letter-spacing:2px;border:none;cursor:pointer;background:transparent;color:var(--burgundy)}
 .tabs button.active{background:var(--burgundy);color:var(--cream)}
 .field{position:relative;margin-bottom:6px}
-.field input{width:100%;padding:14px 44px 14px 14px;border:1px solid var(--line);background:#fff;font-size:14px;outline:none}
+.field input,.field textarea{width:100%;padding:14px 44px 14px 14px;border:1px solid var(--line);background:#fff;font-size:14px;outline:none;font-family:'Inter',sans-serif}
+.field textarea{padding:14px;min-height:64px;resize:vertical}
 .eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--muted);width:28px;height:28px;display:flex;align-items:center;justify-content:center}
 .error{font-size:11px;color:#b91c1c;margin:4px 0 10px;min-height:12px;font-weight:500}
 .success{font-size:11px;color:#15803d;margin:4px 0 10px;min-height:12px;font-weight:600}
@@ -36,6 +42,7 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
 .rules span{display:block}.rules span.ok{color:#15803d}
 .btn{width:100%;padding:14px;background:var(--burgundy);color:var(--cream);border:none;letter-spacing:2px;font-size:13px;cursor:pointer;font-weight:600}
 .btn-small{padding:11px 12px;font-size:11px;letter-spacing:1px;white-space:nowrap;width:auto}
+.btn-outline{background:#fff;color:var(--burgundy);border:1px solid var(--burgundy)}
 .shop{display:none;min-height:100vh;background:var(--cream)}
 .shop.active{display:block}
 .top{position:sticky;top:0;z-index:20;background:var(--cream);border-bottom:1px solid var(--line);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
@@ -75,6 +82,11 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
 .pay-details.show{display:block}
 .copy-btn{font-size:10px;padding:5px 10px;background:var(--burgundy);color:var(--cream);border:none;cursor:pointer;margin-left:8px}
 .card-input{width:100%;padding:12px;border:1px solid var(--line);margin:6px 0;font-size:13px}
+.profile-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px;gap:10px}
+.profile-row span:first-child{color:var(--muted);flex-shrink:0}
+.profile-row span:last-child{font-weight:600;text-align:right;word-break:break-word}
+.addr-option{border:1px solid var(--line);background:#fff;padding:12px;margin-bottom:8px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.addr-option.active{border-color:var(--burgundy);background:var(--beige)}
 </style>
 </head>
 <body>
@@ -90,6 +102,7 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
       <div style="display:flex;gap:8px;margin-bottom:6px"><input id="otpInput" placeholder="Enter OTP Code" style="flex:1;padding:12px;border:1px solid var(--line);font-size:13px"><button class="btn btn-small" onclick="sendOTP()">SEND CODE</button></div>
       <div style="margin-bottom:6px"><button class="btn" style="background:#15803d;padding:11px;font-size:11px" onclick="verifyOTP()">VERIFY PHONE ✓</button></div>
       <div id="phoneError" class="error"></div><div id="phoneSuccess" class="success"></div>
+      <div class="field"><textarea id="address" placeholder="Home / Delivery Address - e.g. 12 Allen Avenue, Ikeja, Lagos"></textarea></div><div id="addressError" class="error"></div>
     </div>
     <div class="field"><input id="email" type="email" placeholder="Email Address" oninput="validateEmail()"></div><div id="emailError" class="error"></div>
     <div class="field"><input id="password" type="password" placeholder="Password" oninput="checkStrength()"><span class="eye" onclick="toggleEye('password','eye1')"><i id="eye1" class="fa-regular fa-eye"></i></span></div>
@@ -104,9 +117,7 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
 </div>
 
 <div id="shop" class="shop">
-  <!-- TOP BAR - CLEAN, NO USERNAME HERE AGAIN -->
-  <div class="top"><h2 class="play">E_FITS</h2><div class="icons"><div class="icon-wrap" onclick="openWallet()"><i class="fa-solid fa-wallet"></i></div><div class="icon-wrap" onclick="openFavs()"><i class="fa-regular fa-heart"></i><span id="favBadge" class="badge" style="display:none">0</span></div><div class="icon-wrap" onclick="openCart()"><i class="fa-solid fa-bag-shopping"></i><span id="cartBadge" class="badge" style="display:none">0</span></div><div class="icon-wrap" onclick="logoutUser()"><i class="fa-solid fa-right-from-bracket"></i></div></div></div>
-  <!-- WELCOME BAR - MINDFUL PLACE FOR HI, NAME + USERNAME -->
+  <div class="top"><h2 class="play">E_FITS</h2><div class="icons"><div class="icon-wrap" onclick="openProfile()"><i class="fa-regular fa-circle-user"></i></div><div class="icon-wrap" onclick="openWallet()"><i class="fa-solid fa-wallet"></i></div><div class="icon-wrap" onclick="openFavs()"><i class="fa-regular fa-heart"></i><span id="favBadge" class="badge" style="display:none">0</span></div><div class="icon-wrap" onclick="openCart()"><i class="fa-solid fa-bag-shopping"></i><span id="cartBadge" class="badge" style="display:none">0</span></div></div></div>
   <div class="welcome-bar"><div style="min-width:0"><h3 id="welcomeUser">Hi, Guest</h3><p id="welcomeUsername">@guest</p></div><div style="text-align:right;flex-shrink:0"><p style="font-size:10px;letter-spacing:1px">WELCOME BACK</p><p style="font-size:11px;color:var(--burgundy);font-weight:600">E_FITS Family 💜</p></div></div>
   <div style="padding:20px 18px;text-align:center;border-bottom:1px solid var(--line)"><h3 class="play" style="font-size:20px;letter-spacing:4px;color:var(--burgundy)">ADIRE COLLECTION</h3></div>
   <div id="products" class="products"></div>
@@ -114,15 +125,21 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
 
 <div id="overlay" class="overlay"></div>
 <div id="productModal" class="modal" onclick="if(event.target==this)closeProduct()"><div class="modal-box"><img id="pImg" style="width:100%;aspect-ratio:4/5;object-fit:cover"><div style="padding:16px"><h3 id="pName" class="play"></h3><p id="pPrice" style="color:var(--muted);margin:6px 0"></p><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="addToCartFromModal()">ADD TO BAG</button><button style="width:46px;border:1px solid var(--line);background:#fff;cursor:pointer" onclick="toggleFavFromModal()"><i id="modalHeart" class="fa-regular fa-heart"></i></button></div></div></div></div>
+
+<!-- PROFILE PANEL -->
+<div id="profilePanel" class="panel"><div class="panel-head"><h4>My Profile</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeProfile()"></i></div><div class="panel-body" style="background:#fff"><div style="text-align:center;padding:10px 0 16px"><div style="width:72px;height:72px;border-radius:50%;background:var(--burgundy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;margin:0 auto" id="profileAvatar">S</div><h3 id="profileName" class="play" style="margin-top:10px">Guest</h3><p id="profileUsername" style="color:var(--muted);font-size:12px">@guest</p></div><div id="profileDetails"></div><div style="margin-top:16px"><label style="font-size:11px;letter-spacing:1px;color:var(--muted)">EDIT DELIVERY ADDRESS</label><textarea id="editAddress" style="width:100%;padding:12px;border:1px solid var(--line);margin-top:8px;min-height:64px;font-family:Inter" placeholder="Your delivery address"></textarea><button class="btn" style="margin-top:8px" onclick="saveAddress()">SAVE ADDRESS</button></div></div><div class="panel-foot"><button class="btn btn-outline" onclick="logoutUser()">LOG OUT</button></div></div>
+
 <div id="cartPanel" class="panel"><div class="panel-head"><h4>Your Bag - <span id="cartCountHead">0 items</span></h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCart()"></i></div><div id="cartBody" class="panel-body"></div><div class="panel-foot"><div style="display:flex;justify-content:space-between;margin-bottom:12px;font-weight:600"><span>Total</span><span id="cartTotal">₦0</span></div><button class="btn" style="background:#000;padding:18px;font-size:14px" onclick="openCheckout()">CHECKOUT & PAY →</button></div></div>
-<div id="checkoutPanel" class="panel" style="z-index:90"><div class="panel-head"><h4>Payment Options</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCheckout()"></i></div><div class="panel-body" style="background:#fff"><h5 style="font-size:11px;letter-spacing:2px;margin-bottom:8px">ORDER SUMMARY</h5><div id="checkoutSummary" style="background:var(--beige);padding:10px;margin-bottom:16px;font-size:11px;line-height:1.6"></div><h5 style="font-size:11px;letter-spacing:2px;margin-bottom:10px">TAP TO SELECT PAYMENT</h5><div id="optWallet" class="pay-option" onclick="selectPay('wallet')"><div><i class="fa-solid fa-wallet"></i> Wallet Bal: ₦<span id="walletBalText">0.00</span></div><i id="checkWallet" class="fa-regular fa-circle"></i></div><div id="detailWallet" class="pay-details"><button class="btn" onclick="payWallet()">PAY WITH WALLET</button></div><div id="optTransfer" class="pay-option" onclick="selectPay('transfer')"><div><i class="fa-solid fa-building-columns"></i> Bank Transfer</div><i id="checkTransfer" class="fa-regular fa-circle"></i></div><div id="detailTransfer" class="pay-details"><div style="background:var(--beige);padding:12px;font-size:12px;line-height:1.9"><div>Bank: <b>OPay</b></div><div>Acct: <b id="acctNum">9066069350</b> <button class="copy-btn" onclick="copyAcct()">COPY</button></div><div>Name: <b>E_FITS</b></div><div>Amount: <b id="transferAmt">₦0</b></div></div><button class="btn" style="margin-top:10px" onclick="payTransfer()">I HAVE TRANSFERRED</button></div><div id="optCard" class="pay-option" onclick="selectPay('card')"><div><i class="fa-regular fa-credit-card"></i> Debit Card</div><i id="checkCard" class="fa-regular fa-circle"></i></div><div id="detailCard" class="pay-details"><input id="cardNumber" class="card-input" placeholder="Card Number" maxlength="19" oninput="formatCard()"><div style="display:flex;gap:8px"><input id="cardExpiry" class="card-input" placeholder="MM/YY"><input id="cardCvv" class="card-input" placeholder="CVV"></div><input id="cardName" class="card-input" placeholder="Name on Card"><button class="btn" style="margin-top:8px" onclick="payCard()">PAY WITH CARD</button></div></div></div>
+
+<div id="checkoutPanel" class="panel" style="z-index:90"><div class="panel-head"><h4>Payment Options</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCheckout()"></i></div><div class="panel-body" style="background:#fff"><h5 style="font-size:11px;letter-spacing:2px;margin-bottom:8px">ORDER SUMMARY</h5><div id="checkoutSummary" style="background:var(--beige);padding:10px;margin-bottom:16px;font-size:11px;line-height:1.6"></div><h5 style="font-size:11px;letter-spacing:2px;margin-bottom:8px">DELIVERY ADDRESS</h5><p style="font-size:12px;margin-bottom:10px">Is your registered address your delivery address?</p><div id="addrSame" class="addr-option active" onclick="selectAddress('same')"><span style="font-size:16px">✓</span><div><b>Yes, use my registered address</b><p id="registeredAddrText" style="font-size:11px;color:var(--muted);margin-top:2px">No address saved</p></div></div><div id="addrDiff" class="addr-option" onclick="selectAddress('diff')"><span style="font-size:16px">○</span><div><b>No, use a different address</b><p style="font-size:11px;color:var(--muted);margin-top:2px">Enter a new delivery address below</p></div></div><div id="diffAddrBox" style="display:none;margin-bottom:16px"><textarea id="deliveryAddressInput" placeholder="Enter delivery address - e.g. 5 Lekki Phase 1, Lagos" style="width:100%;padding:12px;border:1px solid var(--line);min-height:64px;font-family:Inter"></textarea></div><h5 style="font-size:11px;letter-spacing:2px;margin-bottom:10px">TAP TO SELECT PAYMENT</h5><div id="optWallet" class="pay-option" onclick="selectPay('wallet')"><div><i class="fa-solid fa-wallet"></i> Wallet Bal: ₦<span id="walletBalText">0.00</span></div><i id="checkWallet" class="fa-regular fa-circle"></i></div><div id="detailWallet" class="pay-details"><button class="btn" onclick="payWallet()">PAY WITH WALLET</button></div><div id="optTransfer" class="pay-option" onclick="selectPay('transfer')"><div><i class="fa-solid fa-building-columns"></i> Bank Transfer</div><i id="checkTransfer" class="fa-regular fa-circle"></i></div><div id="detailTransfer" class="pay-details"><div style="background:var(--beige);padding:12px;font-size:12px;line-height:1.9"><div>Bank: <b>OPay</b></div><div>Acct: <b id="acctNum">9066069350</b> <button class="copy-btn" onclick="copyAcct()">COPY</button></div><div>Name: <b>E_FITS</b></div><div>Amount: <b id="transferAmt">₦0</b></div></div><button class="btn" style="margin-top:10px" onclick="payTransfer()">I HAVE TRANSFERRED</button></div><div id="optCard" class="pay-option" onclick="selectPay('card')"><div><i class="fa-regular fa-credit-card"></i> Debit Card</div><i id="checkCard" class="fa-regular fa-circle"></i></div><div id="detailCard" class="pay-details"><input id="cardNumber" class="card-input" placeholder="Card Number" maxlength="19" oninput="formatCard()"><div style="display:flex;gap:8px"><input id="cardExpiry" class="card-input" placeholder="MM/YY"><input id="cardCvv" class="card-input" placeholder="CVV"></div><input id="cardName" class="card-input" placeholder="Name on Card"><button class="btn" style="margin-top:8px" onclick="payCard()">PAY WITH CARD</button></div></div></div>
+
 <div id="favPanel" class="panel"><div class="panel-head"><h4>Favourites</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeFavs()"></i></div><div id="favBody" class="panel-body"></div><div class="panel-foot"><button class="btn" onclick="closeFavs()">CONTINUE</button></div></div>
 <div id="walletPanel" class="panel"><div class="panel-head"><h4>My Wallet</h4><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeWallet()"></i></div><div class="panel-body"><div style="background:var(--burgundy);color:var(--cream);padding:20px;text-align:center"><h2 id="walletBal" style="font-size:28px">₦0.00</h2></div><button class="btn" style="margin-top:12px" onclick="addFunds()">ADD FUNDS ₦5000</button></div></div>
 <div id="forgotModal" class="modal"><div class="modal-box" style="padding:24px;text-align:center;max-width:360px;background:var(--cream)"><h3>Reset Password</h3><input id="forgotEmail" type="email" placeholder="Email" style="width:100%;padding:12px;border:1px solid var(--line);margin:12px 0"><button class="btn" onclick="sendReset()">SEND RESET LINK</button><p style="font-size:11px;margin-top:10px;cursor:pointer;text-decoration:underline" onclick="closeForgot()">Back</p></div></div>
 <div id="brandToast" class="toast"><h4 class="play">E_FITS</h4><p id="toastMsg"></p><button class="btn" style="margin-top:12px;padding:10px" onclick="closeToast()">OK</button></div>
 
 <script>
-let tab='login'; let currentProduct=null; let generatedOTP=''; let phoneVerified=false; let currentUser=null;
+let tab='login'; let currentProduct=null; let generatedOTP=''; let phoneVerified=false; let currentUser=null; let deliveryMode='same';
 let products=[{id:1,name:'ADIRE ANO BOUBOU',price:18500,img:'https://i.etsystatic.com/36417893/r/il/6ab6f9/7581955343/il_fullxfull.7581955343_h7la.jpg'},{id:2,name:'INDIGO DYED DRESS',price:22000,img:'https://concubycm.com/cdn/shop/files/Ugodress_Adire_Asooke_2ab7800f-49de-443e-9953-afe8551aec1e.jpg?v=1777495413&width=600'},{id:3,name:'KAMPALA BUBU',price:16500,img:'https://shopsincereonline.com/cdn/shop/files/1adire.jpg?v=1701147385&width=600'},{id:4,name:'YORUBA QUEEN SET',price:25000,img:'https://i.pinimg.com/736x/89/f9/7f/89f97f14eb57ffe93fca7e779ef14815.jpg'},{id:5,name:'OSUN ADIRE GOWN',price:19500,img:'https://i.etsystatic.com/55131899/r/il/6e9f39/8165019105/il_1080xN.8165019105_32kw.jpg'},{id:6,name:'MINIMAL ADIRE TWO-PIECE',price:20500,img:'https://rexclarkeadventures.com/wp-content/uploads/2025/07/FUEl0tpXEAMXnci-480x650.jpeg'}];
 let cart=JSON.parse(localStorage.getItem('efits_cart')||'[]');let favs=JSON.parse(localStorage.getItem('efits_favs')||'[]');let walletBalance=parseInt(localStorage.getItem('efits_wallet')||'0');
 let users=JSON.parse(localStorage.getItem('efits_users')||'[]');
@@ -163,7 +180,7 @@ function doLogin(){
   currentUser=found;localStorage.setItem('efits_current',JSON.stringify(found));enterShop(found);
 }
 function doSignup(){
-  let fullName=document.getElementById('fullName').value.trim();let username=document.getElementById('username').value.trim().toLowerCase();let phone=document.getElementById('phone').value.trim();let e=document.getElementById('email').value.trim().toLowerCase();let p=document.getElementById('password').value;let c=document.getElementById('confirm').value;
+  let fullName=document.getElementById('fullName').value.trim();let username=document.getElementById('username').value.trim().toLowerCase();let phone=document.getElementById('phone').value.trim();let address=document.getElementById('address').value.trim();let e=document.getElementById('email').value.trim().toLowerCase();let p=document.getElementById('password').value;let c=document.getElementById('confirm').value;
   if(!fullName || fullName.split(' ').length<2){document.getElementById('fullNameError').textContent='Enter your full name (first + last)';showBrandToast('Enter your full name');return;}
   document.getElementById('fullNameError').textContent='';
   if(!username || username.length<3){document.getElementById('usernameError').textContent='Username must be at least 3 characters';return;}
@@ -171,23 +188,25 @@ function doSignup(){
   document.getElementById('usernameError').textContent='';
   if(!phone || phone.replace(/\D/g,'').length<10){document.getElementById('phoneError').textContent='Enter valid phone number';return;}
   if(!phoneVerified){document.getElementById('phoneError').textContent='Please verify your phone first — tap SEND CODE then VERIFY.';showBrandToast('Please verify your phone number first');return;}
+  if(!address || address.length<8){document.getElementById('addressError').textContent='Enter your full home / delivery address';showBrandToast('Enter your delivery address');return;}
+  document.getElementById('addressError').textContent='';
   if(!isValidEmail(e)){showBrandToast('Please enter valid email');validateEmail();return;}
   if(users.find(u=>u.email===e)){document.getElementById('emailError').textContent='This email is already registered. Please Login.';showBrandToast('This email is already registered. Please Login.');setTimeout(()=>switchTab('login'),1200);return;}
   let score=getPasswordScore(p);
   if(score<5){document.getElementById('passError').textContent='Your password is too weak! Must have 8 chars, uppercase, lowercase, number & special.';showBrandToast('Your password is too weak! Make it stronger.');return;}
   if(p!==c){document.getElementById('confirmError').textContent='Passwords do not match';return;}
-  let newUser={fullName,username,phone,email:e,password:p,created:Date.now()};users.push(newUser);localStorage.setItem('efits_users',JSON.stringify(users));currentUser=newUser;localStorage.setItem('efits_current',JSON.stringify(newUser));showBrandToast('Welcome '+fullName+'! Account created ✓');setTimeout(()=>enterShop(newUser),800);
+  let newUser={fullName,username,phone,address,email:e,password:p,created:Date.now()};users.push(newUser);localStorage.setItem('efits_users',JSON.stringify(users));currentUser=newUser;localStorage.setItem('efits_current',JSON.stringify(newUser));showBrandToast('Welcome '+fullName+'! Account created ✓');setTimeout(()=>enterShop(newUser),800);
 }
 function enterShop(user){
   document.getElementById('auth').style.display='none';
   document.getElementById('shop').classList.add('active');
   if(user){
     document.getElementById('welcomeUser').textContent='Hi, '+user.fullName.split(' ')[0];
-    document.getElementById('welcomeUsername').textContent='@'+user.username+' • '+user.email;
+    document.getElementById('welcomeUsername').textContent='@'+user.username;
   }
   renderProducts();updateWalletUI();
 }
-function logoutUser(){localStorage.removeItem('efits_current');location.reload();}
+function logoutUser(){localStorage.removeItem('efits_current');document.documentElement.classList.remove('logged-in');location.reload();}
 function checkStayLoggedIn(){
   try{
     let saved=JSON.parse(localStorage.getItem('efits_current')||'null');
@@ -197,8 +216,52 @@ function checkStayLoggedIn(){
     }
   }catch(e){}
 }
-// AUTO-LOGIN ON REFRESH
 window.addEventListener('load',checkStayLoggedIn);
+// PROFILE
+function openProfile(){
+  if(!currentUser){showBrandToast('Please login first');return;}
+  document.getElementById('profileAvatar').textContent=currentUser.fullName.charAt(0).toUpperCase();
+  document.getElementById('profileName').textContent=currentUser.fullName;
+  document.getElementById('profileUsername').textContent='@'+currentUser.username;
+  document.getElementById('profileDetails').innerHTML=`
+    <div class="profile-row"><span>Full Name</span><span>${currentUser.fullName}</span></div>
+    <div class="profile-row"><span>Username</span><span>@${currentUser.username}</span></div>
+    <div class="profile-row"><span>Phone</span><span>${currentUser.phone}</span></div>
+    <div class="profile-row"><span>Email</span><span>${currentUser.email}</span></div>
+    <div class="profile-row"><span>Address</span><span>${currentUser.address||'Not set'}</span></div>
+    <div class="profile-row"><span>Member Since</span><span>${new Date(currentUser.created||Date.now()).toLocaleDateString()}</span></div>
+  `;
+  document.getElementById('editAddress').value=currentUser.address||'';
+  document.getElementById('profilePanel').classList.add('open');document.getElementById('overlay').classList.add('show');document.getElementById('overlay').onclick=closeAllPanels;
+}
+function closeProfile(){document.getElementById('profilePanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
+function saveAddress(){
+  let newAddr=document.getElementById('editAddress').value.trim();
+  if(!newAddr || newAddr.length<8){showBrandToast('Enter a valid address');return;}
+  currentUser.address=newAddr;
+  let idx=users.findIndex(u=>u.email===currentUser.email);
+  if(idx>=0) users[idx]=currentUser;
+  localStorage.setItem('efits_users',JSON.stringify(users));
+  localStorage.setItem('efits_current',JSON.stringify(currentUser));
+  showBrandToast('Address saved ✓'); openProfile();
+}
+// DELIVERY ADDRESS IN CHECKOUT
+function selectAddress(mode){
+  deliveryMode=mode;
+  document.getElementById('addrSame').classList.toggle('active',mode==='same');
+  document.getElementById('addrDiff').classList.toggle('active',mode==='diff');
+  document.getElementById('addrSame').querySelector('span').textContent=mode==='same'?'✓':'○';
+  document.getElementById('addrDiff').querySelector('span').textContent=mode==='diff'?'✓':'○';
+  document.getElementById('diffAddrBox').style.display=mode==='diff'?'block':'none';
+}
+function getDeliveryAddress(){
+  if(deliveryMode==='diff'){
+    let v=document.getElementById('deliveryAddressInput').value.trim();
+    if(!v){showBrandToast('Enter your delivery address or choose registered address');return null;}
+    return v;
+  }
+  return currentUser && currentUser.address ? currentUser.address : 'No address saved';
+}
 function openForgot(){document.getElementById('forgotModal').classList.add('show')}function closeForgot(){document.getElementById('forgotModal').classList.remove('show')}function sendReset(){let e=document.getElementById('forgotEmail').value.trim().toLowerCase();if(!isValidEmail(e)){showBrandToast('Enter valid email');return}let found=users.find(u=>u.email===e);if(!found){showBrandToast('This email is not registered. Please Sign Up.');return}closeForgot();showBrandToast('Reset link sent to '+e);}
 function showBrandToast(msg){document.getElementById('toastMsg').textContent=msg;document.getElementById('brandToast').classList.add('show');}function closeToast(){document.getElementById('brandToast').classList.remove('show')}
 function renderProducts(){let wrap=document.getElementById('products');wrap.innerHTML='';products.forEach(p=>{let isFav=favs.includes(p.id);let div=document.createElement('div');div.className='card';div.innerHTML=`<button class="fav-btn" onclick="event.stopPropagation();toggleFav(${p.id})"><i class="${isFav?'fa-solid':'fa-regular'} fa-heart"></i></button><img src="${p.img}"><div class="info"><h4>${p.name}</h4><div class="row"><p>₦${p.price.toLocaleString()}</p><button class="add" onclick="event.stopPropagation();quickAdd(${p.id})">ADD</button></div></div>`;div.onclick=()=>openProduct(p.id);wrap.appendChild(div);});updateBadges();}
@@ -211,7 +274,7 @@ function changeQty(id,delta){let ex=cart.find(x=>x.id===id);if(!ex)return;ex.qty
 function removeCart(id){cart=cart.filter(x=>x.id!==id);localStorage.setItem('efits_cart',JSON.stringify(cart));renderCart();renderProducts();}
 function openCart(){renderCart();document.getElementById('cartPanel').classList.add('open');document.getElementById('overlay').classList.add('show');document.getElementById('overlay').onclick=closeAllPanels;}
 function closeCart(){document.getElementById('cartPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
-function closeAllPanels(){document.getElementById('cartPanel').classList.remove('open');document.getElementById('favPanel').classList.remove('open');document.getElementById('walletPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
+function closeAllPanels(){document.getElementById('cartPanel').classList.remove('open');document.getElementById('favPanel').classList.remove('open');document.getElementById('walletPanel').classList.remove('open');document.getElementById('profilePanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
 function toggleFav(id){if(favs.includes(id))favs=favs.filter(x=>x!==id);else favs.push(id);localStorage.setItem('efits_favs',JSON.stringify(favs));renderProducts();renderFavs();}
 function toggleFavFromModal(){toggleFav(currentProduct.id);let isFav=favs.includes(currentProduct.id);document.getElementById('modalHeart').className=(isFav?'fa-solid':'fa-regular')+' fa-heart';}
 function renderFavs(){let body=document.getElementById('favBody');body.innerHTML='';if(favs.length===0){body.innerHTML='<p style="text-align:center;margin-top:20px;font-size:12px">No favourites</p>';return}favs.forEach(id=>{let p=products.find(x=>x.id===id);let div=document.createElement('div');div.className='item';div.innerHTML=`<img src="${p.img}"><div style="flex:1"><h4 style="font-size:11px">${p.name}</h4><p>₦${p.price.toLocaleString()}</p></div><i class="fa-solid fa-xmark" onclick="toggleFav(${p.id})"></i>`;body.appendChild(div);});}
@@ -227,6 +290,7 @@ function openCheckout(){
   let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);
   document.getElementById('checkoutSummary').innerHTML=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty} = ₦${(p.price*c.qty).toLocaleString()}`}).join('<br>')+`<br><br><b>Total: ₦${total.toLocaleString()}</b>`;
   document.getElementById('transferAmt').textContent='₦'+total.toLocaleString();
+  document.getElementById('registeredAddrText').textContent=currentUser && currentUser.address ? currentUser.address : 'No address saved - go to Profile to add';
   document.getElementById('cartPanel').classList.remove('open');
   document.getElementById('checkoutPanel').classList.add('open');
   document.getElementById('overlay').classList.add('show');
@@ -249,10 +313,10 @@ function selectPay(type){
   document.getElementById('check'+type.charAt(0).toUpperCase()+type.slice(1)).className='fa-solid fa-circle-check';
 }
 function copyAcct(){let num=document.getElementById('acctNum').textContent;navigator.clipboard.writeText(num);showBrandToast('Copied: '+num);}
-function payWallet(){let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);if(walletBalance<total){showBrandToast('Insufficient balance');return}walletBalance-=total;localStorage.setItem('efits_wallet',walletBalance);updateWalletUI();completeOrder('Wallet');}
-function payTransfer(){completeOrder('Bank Transfer 9066069350');}
-function payCard(){let num=document.getElementById('cardNumber').value.trim();if(num.replace(/\s/g,'').length<16){showBrandToast('Invalid card');return}completeOrder('Card '+num.slice(-4));}
-function completeOrder(method){let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);let text=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty}`}).join('%0A');closeCheckout();showBrandToast('Payment successful via '+method);let msg=`Hi E_FITS, I just paid via ${method}!%0AOrder:%0A${text}%0ATotal: ₦${total}`;setTimeout(()=>window.open('https://wa.me/2349066069350?text='+msg,'_blank'),800);cart=[];localStorage.setItem('efits_cart',JSON.stringify(cart));renderProducts();renderCart();}
+function payWallet(){let addr=getDeliveryAddress();if(!addr)return;let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);if(walletBalance<total){showBrandToast('Insufficient balance');return}walletBalance-=total;localStorage.setItem('efits_wallet',walletBalance);updateWalletUI();completeOrder('Wallet',addr);}
+function payTransfer(){let addr=getDeliveryAddress();if(!addr)return;completeOrder('Bank Transfer 9066069350',addr);}
+function payCard(){let addr=getDeliveryAddress();if(!addr)return;let num=document.getElementById('cardNumber').value.trim();if(num.replace(/\s/g,'').length<16){showBrandToast('Invalid card');return}completeOrder('Card '+num.slice(-4),addr);}
+function completeOrder(method,addr){let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);let text=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty}`}).join('%0A');closeCheckout();showBrandToast('Payment successful via '+method);let msg=`Hi E_FITS, I just paid via ${method}!%0AOrder:%0A${text}%0ATotal: ₦${total}%0ADelivery to: ${addr}`;setTimeout(()=>window.open('https://wa.me/2349066069350?text='+msg,'_blank'),800);cart=[];localStorage.setItem('efits_cart',JSON.stringify(cart));renderProducts();renderCart();}
 function formatCard(){let i=document.getElementById('cardNumber');let v=i.value.replace(/\D/g,'').slice(0,16);let f=v.replace(/(.{4})/g,'$1 ').trim();i.value=f;}
 </script>
 </body>
