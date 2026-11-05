@@ -100,8 +100,34 @@ html.logged-in #shop{display:block !important}
 .product-info{flex:0 0 auto;display:flex;flex-direction:column;padding:10px 14px 12px}
 .print-dot{width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;flex-shrink:0}
 .print-dot.active{border-color:var(--burgundy);transform:scale(1.15)}
-/* SMALL SWIPE ARROWS - small, soft, not blocking */
 .mini-arrow{position:absolute;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.85);border:none;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--burgundy);cursor:pointer;z-index:6;box-shadow:0 1px 6px rgba(0,0,0,.15);opacity:.9}
+.footer{background:var(--burgundy);color:var(--cream);padding:28px 20px 100px;text-align:center}
+.footer h3{letter-spacing:6px;font-size:22px;margin-bottom:6px}
+.footer p{font-size:11px;opacity:.8;line-height:1.6}
+.social-row{display:flex;justify-content:center;gap:12px;margin:16px 0}
+.social-btn{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px;cursor:pointer;text-decoration:none}
+/* IN-APP AI CHAT */
+.support-float{position:fixed;bottom:18px;right:16px;z-index:60;display:flex;align-items:center;gap:8px;background:var(--burgundy);color:#fff;border:none;padding:12px 16px;border-radius:50px;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;font-size:12px;letter-spacing:.3px}
+.support-float i{font-size:18px}
+.chat-panel{position:fixed;bottom:16px;right:16px;width:360px;max-width:calc(100vw - 32px);height:540px;max-height:calc(100dvh - 32px);background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.35);z-index:120;display:none;flex-direction:column;overflow:hidden}
+.chat-panel.open{display:flex}
+.chat-head{background:var(--burgundy);color:var(--cream);padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.chat-avatar{width:38px;height:38px;border-radius:50%;background:#fff;color:var(--burgundy);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0}
+.chat-body{flex:1;overflow-y:auto;padding:12px;background:#fdf8f3;display:flex;flex-direction:column;gap:8px}
+.chat-msg{max-width:82%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.chat-msg.ai{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-msg.user{background:var(--burgundy);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.chat-time{font-size:9px;opacity:.6;margin-top:4px;text-align:right}
+.quick-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.quick-btn{font-size:11px;padding:7px 10px;border-radius:20px;border:1px solid var(--burgundy);background:#fff;color:var(--burgundy);cursor:pointer;font-weight:600}
+.quick-btn:hover{background:var(--burgundy);color:#fff}
+.chat-input-row{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:#fff;flex-shrink:0;padding-bottom:16px}
+.chat-input{flex:1;padding:11px 12px;border:1px solid var(--line);border-radius:20px;outline:none;font-size:13px;font-family:'Inter',sans-serif}
+.chat-send{width:40px;height:40px;border-radius:50%;background:var(--burgundy);color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.typing{display:flex;gap:4px;padding:10px 12px;background:#fff;border:1px solid var(--line);border-radius:14px;align-self:flex-start;width:52px}
+.typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:blink 1s infinite}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
 </style>
 </head>
 <body>
@@ -132,10 +158,37 @@ html.logged-in #shop{display:block !important}
 </div>
 
 <div id="shop" class="shop">
-  <div class="top"><h2 class="play">E_FITS</h2><div class="icons"><div class="icon-wrap" onclick="openProfile()"><i class="fa-regular fa-circle-user"></i></div><div class="icon-wrap" onclick="openWallet()"><i class="fa-solid fa-wallet"></i></div><div class="icon-wrap" onclick="openFavs()"><i class="fa-regular fa-heart"></i><span id="favBadge" class="badge" style="display:none">0</span></div><div class="icon-wrap" onclick="openCart()"><i class="fa-solid fa-bag-shopping"></i><span id="cartBadge" class="badge" style="display:none">0</span></div></div></div>
+  <div class="top"><h2 class="play">E_FITS</h2><div class="icons"><div class="icon-wrap" onclick="openProfile()"><i class="fa-regular fa-circle-user"></i></div><div class="icon-wrap" onclick="openWallet()"><i class="fa-solid fa-wallet"></i></div><div class="icon-wrap" onclick="openFavs()"><i class="fa-regular fa-heart"></i><span id="favBadge" class="badge" style="display:none">0</span></div><div class="icon-wrap" onclick="openCart()"><i class="fa-solid fa-bag-shopping"></i><span id="cartBadge" class="badge" style="display:none">0</span></div><div class="icon-wrap" onclick="openSupportChat()" title="Talk to Support"><i class="fa-regular fa-comments"></i></div></div></div>
   <div class="welcome-bar"><div style="min-width:0"><h3 id="welcomeUser">Hi, Guest</h3><p id="welcomeUsername">@guest</p></div><div style="text-align:right;flex-shrink:0"><p style="font-size:10px;letter-spacing:1px">WELCOME BACK</p><p style="font-size:11px;color:var(--burgundy);font-weight:600">E_FITS Family 💜</p></div></div>
   <div style="padding:20px 18px;text-align:center;border-bottom:1px solid var(--line)"><h3 class="play" style="font-size:20px;letter-spacing:4px;color:var(--burgundy)">ADIRE COLLECTION</h3></div>
   <div id="products" class="products"></div>
+  <div class="footer">
+    <h3 class="play">E_FITS</h3>
+    <p>Bold. Intentional. Minimal.<br>Hand-dyed Adire made with love in Lagos.</p>
+    <p style="letter-spacing:2px;margin-top:16px;font-weight:600">FOLLOW US</p>
+    <div class="social-row">
+      <a class="social-btn" href="https://instagram.com/e_fits" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a class="social-btn" href="https://tiktok.com/@e_fits" target="_blank" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+      <a class="social-btn" href="https://facebook.com/efits" target="_blank" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+      <a class="social-btn" href="https://wa.me/2349066069350" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+      <a class="social-btn" href="https://x.com/e_fits" target="_blank" title="X / Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+    </div>
+    <p style="font-size:11px">Need help? Tap Talk to Support below<br>or WhatsApp 0906 606 9350</p>
+    <p style="margin-top:14px;opacity:.6">© 2026 E_FITS. All rights reserved.</p>
+  </div>
+</div>
+
+<!-- IN-APP AI SUPPORT - STAYS INSIDE WEBSITE -->
+<button id="supportFloatBtn" class="support-float" onclick="openSupportChat()"><i class="fa-solid fa-comments"></i> Talk to Support</button>
+
+<div id="supportChat" class="chat-panel">
+  <div class="chat-head">
+    <div class="chat-avatar">E</div>
+    <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px">E_FITS Assistant 💜</div><div style="font-size:11px;opacity:.85">● Online • Replies instantly • AI</div></div>
+    <i class="fa-solid fa-xmark" style="cursor:pointer;padding:6px" onclick="closeSupportChat()"></i>
+  </div>
+  <div id="chatBody" class="chat-body"></div>
+  <div class="chat-input-row"><input id="chatInput" class="chat-input" placeholder="Type your question..." onkeypress="if(event.key==='Enter')sendChatMsg()"><button class="chat-send" onclick="sendChatMsg()"><i class="fa-solid fa-paper-plane"></i></button></div>
 </div>
 
 <div id="overlay" class="overlay"></div>
@@ -183,6 +236,107 @@ let products=[
 ];
 let cart=JSON.parse(localStorage.getItem('efits_cart')||'[]');let favs=JSON.parse(localStorage.getItem('efits_favs')||'[]');let walletBalance=parseInt(localStorage.getItem('efits_wallet')||'0');
 let users=JSON.parse(localStorage.getItem('efits_users')||'[]');
+
+// --- IN-APP AI SUPPORT - STAYS INSIDE WEBSITE ---
+let chatHistory=JSON.parse(localStorage.getItem('efits_chat')||'[]');
+let chatOpened=false;
+function openSupportChat(){
+  document.getElementById('supportChat').classList.add('open');
+  document.getElementById('supportFloatBtn').style.display='none';
+  if(!chatOpened){
+    chatOpened=true;
+    renderChatHistory();
+    if(chatHistory.length===0){
+      let name=currentUser?currentUser.fullName.split(' ')[0]:'there';
+      setTimeout(()=>{
+        addChatMsg('ai',`Hi ${name}! 💜 I'm E_FITS Assistant.\n\nI fit help you with anything for E_FITS — no need to leave this page.\n\nTap one below or type your question:`);
+        addQuickReplies(['Track my order','Size help','How to pay?','Delivery time','Talk to human']);
+      },300);
+    }
+  }
+  setTimeout(()=>{let b=document.getElementById('chatBody');b.scrollTop=b.scrollHeight;document.getElementById('chatInput').focus();},100);
+}
+function closeSupportChat(){document.getElementById('supportChat').classList.remove('open');document.getElementById('supportFloatBtn').style.display='flex';}
+function talkToSupport(){openSupportChat();}
+function renderChatHistory(){
+  let body=document.getElementById('chatBody');body.innerHTML='';
+  chatHistory.forEach(m=>{
+    let div=document.createElement('div');div.className='chat-msg '+(m.role==='ai'?'ai':'user');div.textContent=m.text;body.appendChild(div);
+  });
+  body.scrollTop=body.scrollHeight;
+}
+function addChatMsg(role,text){
+  chatHistory.push({role,text,time:Date.now()});localStorage.setItem('efits_chat',JSON.stringify(chatHistory));
+  let body=document.getElementById('chatBody');let div=document.createElement('div');div.className='chat-msg '+role;div.textContent=text;body.appendChild(div);body.scrollTop=body.scrollHeight;
+}
+function addQuickReplies(options){
+  let body=document.getElementById('chatBody');let wrap=document.createElement('div');wrap.className='quick-row';
+  options.forEach(opt=>{
+    let b=document.createElement('button');b.className='quick-btn';b.textContent=opt;
+    b.onclick=()=>{sendChatMsg(opt);};
+    wrap.appendChild(b);
+  });
+  body.appendChild(wrap);body.scrollTop=body.scrollHeight;
+}
+function sendChatMsg(preset){
+  let input=document.getElementById('chatInput');let text=preset||input.value.trim();if(!text)return;
+  addChatMsg('user',text);input.value='';
+  // remove old quick buttons
+  document.querySelectorAll('.quick-row').forEach(el=>el.remove());
+  // typing indicator
+  let body=document.getElementById('chatBody');let typing=document.createElement('div');typing.className='typing';typing.id='typingBubble';typing.innerHTML='<span></span><span></span><span></span>';body.appendChild(typing);body.scrollTop=body.scrollHeight;
+  setTimeout(()=>{
+    document.getElementById('typingBubble')?.remove();
+    let reply=getAIReply(text);
+    addChatMsg('ai',reply.text);
+    if(reply.quick) addQuickReplies(reply.quick);
+  },900);
+}
+function getAIReply(raw){
+  let t=raw.toLowerCase();
+  let name=currentUser?currentUser.fullName.split(' ')[0]:'';
+  if(t.includes('human')||t.includes('real person')||t.includes('talk to')||t.includes('whatsapp')||t.includes('agent')){
+    return {text:`No wahala ${name} 💜\n\nIf you still need human, tap below to open WhatsApp — your message go already dey there. But I still dey here if you want ask me anything else.\n\nWhatsApp: 0906 606 9350`,quick:['Open WhatsApp','Back to shopping']};
+  }
+  if(t.includes('open whatsapp')){
+    window.open('https://wa.me/2349066069350?text=Hi%20E_FITS%2C%20I%20need%20help%20from%20support','_blank');
+    return {text:`I don open WhatsApp for you 💬\n\nYour chat go continue there with our human team. I still dey here for E_FITS if you need me again.`,quick:['Track my order','Size help','Delivery time']};
+  }
+  if(t.includes('track')||t.includes('order')||t.includes('where is')||t.includes('delivery status')){
+    if(cart.length===0) return {text:`To track your order:\n\n1. If you don pay already, check your WhatsApp — we dey send update there.\n2. If you never pay, your bag dey empty now. Add something to bag and checkout.\n\nWant make I check your bag now?`,quick:['Check my bag','Delivery time','Talk to human']};
+    let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);
+    return {text:`Your current bag get ${cart.reduce((s,c)=>s+c.qty,0)} item(s) — Total ₦${total.toLocaleString()}.\n\nOnce you checkout and pay, we go process am in 1-2 days and send you tracking update for WhatsApp.\n\nYou want make I help you checkout?`,quick:['Checkout now','Delivery time','Talk to human']};
+  }
+  if(t.includes('size')||t.includes('fit')||t.includes('measurement')||t.includes('big')||t.includes('small')){
+    return {text:`For size, no stress 💜\n\n• Boubou / Bubu / Gown — FREE SIZE, e fit everybody.\n• Two-Piece / Fitted Dress — Tell me your bust / waist, I go tell you the size wey fit.\n\nOur Adire na hand-dyed, so e get small stretch and flow. If you dey between sizes, pick the bigger one for comfort.\n\nWetin be your size — S, M, L, XL?`,quick:['I wear M','I wear L','Talk to human']};
+  }
+  if(t.includes('pay')||t.includes('payment')||t.includes('transfer')||t.includes('card')||t.includes('wallet')||t.includes('how to buy')){
+    return {text:`You fit pay with 3 ways:\n\n1. Wallet — Add funds inside app, pay in 1 tap\n2. Bank Transfer — OPay 9066069350 (E_FITS)\n3. Debit Card — Visa / Mastercard inside checkout\n\nAfter payment, we go confirm for WhatsApp and prepare your order.\n\nYou want make I show you your bag?`,quick:['Check my bag','Delivery time','Talk to human']};
+  }
+  if(t.includes('deliver')||t.includes('shipping')||t.includes('how long')||t.includes('lagos')||t.includes('abuja')){
+    return {text:`Delivery 🚚\n\n• Lagos: 1-3 days\n• Outside Lagos: 2-5 days\n• We dey deliver to your registered address — you fit change am for checkout if you want different address.\n\nDelivery fee dey show for checkout before you pay.\n\nWhere you dey — Lagos or outside Lagos?`,quick:['Lagos','Outside Lagos','Talk to human']};
+  }
+  if(t.includes('price')||t.includes('how much')||t.includes('cost')||t.includes('cheap')){
+    return {text:`Our prices:\n\n• Kampala Bubu — ₦16,500\n• Adire Ano Boubou — ₦18,500\n• Osun Gown — ₦19,500\n• Minimal Two-Piece — ₦20,500\n• Indigo Dress — ₦22,000\n• Yoruba Queen Set — ₦25,000\n\nAll na hand-dyed Adire, and each dress get 3 prints to choose from. Which one you like?`,quick:['Show Boubou','Show Dress','Talk to human']};
+  }
+  if(t.includes('return')||t.includes('exchange')||t.includes('refund')){
+    return {text:`For return / exchange:\n\n• If size no fit or print no be wetin you order, tell us within 2 days after delivery, we go exchange am.\n• Dress must still be new, no wash, no wear for event.\n\nTell me wetin happen — size issue or wrong print?`,quick:['Size issue','Wrong print','Talk to human']};
+  }
+  if(t.includes('hi')||t.includes('hello')||t.includes('hey')||t.includes('good morning')||t.includes('good afternoon')){
+    return {text:`Hello ${name}! 💜 Welcome to E_FITS.\n\nI dey here to help you shop easy. Wetin you want do today?`,quick:['Track my order','Size help','How to pay?','Delivery time']};
+  }
+  if(t.includes('thank')||t.includes('thanks')){
+    return {text:`You are welcome ${name}! 💜 Anytime you need me, I dey here.\n\nMake you enjoy your shopping for E_FITS.`,quick:['Back to shopping','Talk to human']};
+  }
+  if(t.includes('back to shopping')||t.includes('show')){
+    closeSupportChat();return {text:``,quick:[]};
+  }
+  if(t.includes('check my bag')||t.includes('checkout')){
+    openCart();return {text:`I don open your bag for you 🛍️\n\nCheck am, if everything correct, tap CHECKOUT & PAY.`,quick:['Delivery time','Talk to human']};
+  }
+  return {text:`I hear you 💜\n\nI fit help with:\n• Track your order\n• Size & fit\n• How to pay\n• Delivery time\n• Prices & prints\n\nWhich one you want? Or type your question for your own words.`,quick:['Track my order','Size help','How to pay?','Delivery time','Talk to human']};
+}
+
 function lockScroll(){scrollPos=window.scrollY;document.body.classList.add('locked');document.body.style.top='-'+scrollPos+'px';}
 function unlockScroll(){document.body.classList.remove('locked');document.body.style.top='';window.scrollTo(0,scrollPos);}
 function isValidEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
@@ -309,7 +463,6 @@ function renderProducts(){
   products.forEach(p=>{
     let isFav=favs.includes(p.id);
     let galleryCount=(p.gallery||[]).length;
-    // ONLY ONE small badge inside details box - no overlay on picture, no duplicate
     let printMini=galleryCount>1?`<div><span class="print-mini">✓ Available in ${galleryCount} Prints</span></div>`:'';
     let div=document.createElement('div');div.className='card';
     div.innerHTML=`<button class="fav-btn" onclick="event.stopPropagation();toggleFav(${p.id})"><i class="${isFav?'fa-solid':'fa-regular'} fa-heart"></i></button><img src="${p.img}"><div class="info"><h4>${p.name}</h4>${printMini}<div class="row"><p>₦${p.price.toLocaleString()}</p><button class="add" onclick="event.stopPropagation();quickAdd(${p.id})">ADD</button></div></div>`;
@@ -373,7 +526,6 @@ function updatePrintUI(){
     d.onclick=()=>{ selectedPrint=i; currentImgIndex=i; document.getElementById('galleryWrap').scrollTo({left:i*document.getElementById('galleryWrap').clientWidth,behavior:'smooth'}); updatePrintUI(); };
     dotsWrap.appendChild(d);
   });
-  // Hide left arrow on first, right arrow on last - so it stays clean
   if(total>1){
     document.getElementById('arrowLeft').style.opacity= selectedPrint===0 ? '0.35' : '0.9';
     document.getElementById('arrowRight').style.opacity= selectedPrint===total-1 ? '0.35' : '0.9';
