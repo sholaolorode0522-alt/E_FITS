@@ -15,13 +15,15 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
 .auth-card{background:var(--cream);width:100%;max-width:420px;padding:36px 28px 28px}
 .logo{text-align:center;margin-bottom:22px}
 .logo h1{font-size:48px;letter-spacing:8px;color:var(--burgundy);font-weight:700}
+.logo p{letter-spacing:3px;font-size:12px;color:var(--muted);margin-top:6px;text-transform:uppercase}
 .tabs{display:flex;background:var(--beige);margin-bottom:24px;border:1px solid var(--line)}
 .tabs button{flex:1;padding:12px;font-size:13px;letter-spacing:2px;border:none;cursor:pointer;background:transparent;color:var(--burgundy)}
 .tabs button.active{background:var(--burgundy);color:var(--cream)}
 .field{position:relative;margin-bottom:6px}
 .field input{width:100%;padding:14px 44px 14px 14px;border:1px solid var(--line);background:#fff;font-size:14px;outline:none}
 .eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--muted);width:28px;height:28px;display:flex;align-items:center;justify-content:center}
-.error{font-size:10px;color:#b91c1c;margin:4px 0 10px;min-height:12px}
+.error{font-size:11px;color:#b91c1c;margin:4px 0 10px;min-height:12px;font-weight:500}
+.success{font-size:11px;color:#15803d;margin:4px 0 10px;min-height:12px;font-weight:600}
 .strength-wrap{margin:6px 0 12px}
 .strength-bar{display:flex;gap:4px;height:4px}
 .strength-bar span{flex:1;background:var(--line);border-radius:2px}
@@ -29,7 +31,11 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
 .strength-bar span.active-medium{background:#d97706}
 .strength-bar span.active-strong{background:#15803d}
 .strength-text{font-size:10px;margin-top:4px;font-weight:600}
+.strength-text.weak{color:#b91c1c}.strength-text.medium{color:#d97706}.strength-text.strong{color:#15803d}
+.rules{font-size:10px;color:var(--muted);margin:0 0 12px;line-height:1.6}
+.rules span{display:block}.rules span.ok{color:#15803d}
 .btn{width:100%;padding:14px;background:var(--burgundy);color:var(--cream);border:none;letter-spacing:2px;font-size:13px;cursor:pointer;font-weight:600}
+.btn-small{padding:11px 12px;font-size:11px;letter-spacing:1px;white-space:nowrap;width:auto}
 .shop{display:none;min-height:100vh;background:var(--cream)}
 .shop.active{display:block}
 .top{position:sticky;top:0;z-index:20;background:var(--cream);border-bottom:1px solid var(--line);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
@@ -74,18 +80,31 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
   <div class="auth-card">
     <div class="logo"><h1 class="play">E_FITS</h1><p>Bold.Intentional.Minimal</p></div>
     <div class="tabs"><button id="tLogin" class="active" onclick="switchTab('login')">LOGIN</button><button id="tSignup" onclick="switchTab('signup')">SIGN UP</button></div>
+
+    <!-- SIGNUP ONLY FIELDS -->
+    <div id="signupExtra" style="display:none">
+      <div class="field"><input id="fullName" type="text" placeholder="Full Name - e.g. Adaeze Okafor"></div><div id="fullNameError" class="error"></div>
+      <div class="field"><input id="username" type="text" placeholder="Username - e.g. ada_fits"></div><div id="usernameError" class="error"></div>
+      <div class="field"><input id="phone" type="tel" placeholder="Phone Number - e.g. 09066069350"></div>
+      <div style="display:flex;gap:8px;margin-bottom:6px"><input id="otpInput" placeholder="Enter OTP Code" style="flex:1;padding:12px;border:1px solid var(--line);font-size:13px"><button class="btn btn-small" onclick="sendOTP()">SEND CODE</button></div>
+      <div style="margin-bottom:6px"><button class="btn" style="background:#15803d;padding:11px;font-size:11px" onclick="verifyOTP()">VERIFY PHONE ✓</button></div>
+      <div id="phoneError" class="error"></div><div id="phoneSuccess" class="success"></div>
+    </div>
+
     <div class="field"><input id="email" type="email" placeholder="Email Address" oninput="validateEmail()"></div><div id="emailError" class="error"></div>
     <div class="field"><input id="password" type="password" placeholder="Password" oninput="checkStrength()"><span class="eye" onclick="toggleEye('password','eye1')"><i id="eye1" class="fa-regular fa-eye"></i></span></div>
     <div id="strengthWrap" class="strength-wrap" style="display:none"><div class="strength-bar"><span id="bar1"></span><span id="bar2"></span><span id="bar3"></span><span id="bar4"></span><span id="bar5"></span></div><div id="strengthText" class="strength-text"></div></div>
+    <div id="rules" class="rules" style="display:none"><span id="ruleLen">✗ At least 8 characters</span><span id="ruleUpper">✗ One uppercase</span><span id="ruleLower">✗ One lowercase</span><span id="ruleNum">✗ One number</span><span id="ruleSpecial">✗ One special (!@#...)</span></div>
     <div id="passError" class="error"></div>
-    <div id="signupExtra" style="display:none"><div class="field"><input id="confirm" type="password" placeholder="Confirm Password" oninput="validateConfirm()"><span class="eye" onclick="toggleEye('confirm','eye2')"><i id="eye2" class="fa-regular fa-eye"></i></span></div><div id="confirmError" class="error"></div></div>
+    <div id="signupConfirm" style="display:none"><div class="field"><input id="confirm" type="password" placeholder="Confirm Password" oninput="validateConfirm()"><span class="eye" onclick="toggleEye('confirm','eye2')"><i id="eye2" class="fa-regular fa-eye"></i></span></div><div id="confirmError" class="error"></div></div>
     <div style="text-align:right;margin:6px 0 16px"><a onclick="openForgot()" style="font-size:12px;color:var(--burgundy);text-decoration:underline;cursor:pointer">Forgot password?</a></div>
-    <button class="btn" onclick="enterBoutique()">ENTER BOUTIQUE</button>
+    <button class="btn" id="mainBtn" onclick="handleAuth()">ENTER BOUTIQUE</button>
+    <p id="authHint" style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">New here? Tap SIGN UP to create account.</p>
   </div>
 </div>
 
 <div id="shop" class="shop">
-  <div class="top"><h2 class="play">E_FITS</h2><div class="icons"><div class="icon-wrap" onclick="openWallet()"><i class="fa-solid fa-wallet"></i></div><div class="icon-wrap" onclick="openFavs()"><i class="fa-regular fa-heart"></i><span id="favBadge" class="badge" style="display:none">0</span></div><div class="icon-wrap" onclick="openCart()"><i class="fa-solid fa-bag-shopping"></i><span id="cartBadge" class="badge" style="display:none">0</span></div></div></div>
+  <div class="top"><h2 class="play">E_FITS</h2><div style="display:flex;align-items:center;gap:10px"><span id="welcomeUser" style="font-size:11px;color:var(--muted)"></span><div class="icons"><div class="icon-wrap" onclick="openWallet()"><i class="fa-solid fa-wallet"></i></div><div class="icon-wrap" onclick="openFavs()"><i class="fa-regular fa-heart"></i><span id="favBadge" class="badge" style="display:none">0</span></div><div class="icon-wrap" onclick="openCart()"><i class="fa-solid fa-bag-shopping"></i><span id="cartBadge" class="badge" style="display:none">0</span></div><div class="icon-wrap" onclick="logoutUser()"><i class="fa-solid fa-right-from-bracket"></i></div></div></div></div>
   <div style="padding:20px 18px;text-align:center;border-bottom:1px solid var(--line)"><h3 class="play" style="font-size:20px;letter-spacing:4px;color:var(--burgundy)">ADIRE COLLECTION</h3></div>
   <div id="products" class="products"></div>
 </div>
@@ -104,16 +123,65 @@ body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;
 <div id="brandToast" class="toast"><h4 class="play">E_FITS</h4><p id="toastMsg"></p><button class="btn" style="margin-top:12px;padding:10px" onclick="closeToast()">OK</button></div>
 
 <script>
-let tab='login'; let currentProduct=null;
+let tab='login'; let currentProduct=null; let generatedOTP=''; let phoneVerified=false; let currentUser=null;
 let products=[{id:1,name:'ADIRE ANO BOUBOU',price:18500,img:'https://i.etsystatic.com/36417893/r/il/6ab6f9/7581955343/il_fullxfull.7581955343_h7la.jpg'},{id:2,name:'INDIGO DYED DRESS',price:22000,img:'https://concubycm.com/cdn/shop/files/Ugodress_Adire_Asooke_2ab7800f-49de-443e-9953-afe8551aec1e.jpg?v=1777495413&width=600'},{id:3,name:'KAMPALA BUBU',price:16500,img:'https://shopsincereonline.com/cdn/shop/files/1adire.jpg?v=1701147385&width=600'},{id:4,name:'YORUBA QUEEN SET',price:25000,img:'https://i.pinimg.com/736x/89/f9/7f/89f97f14eb57ffe93fca7e779ef14815.jpg'},{id:5,name:'OSUN ADIRE GOWN',price:19500,img:'https://i.etsystatic.com/55131899/r/il/6e9f39/8165019105/il_1080xN.8165019105_32kw.jpg'},{id:6,name:'MINIMAL ADIRE TWO-PIECE',price:20500,img:'https://rexclarkeadventures.com/wp-content/uploads/2025/07/FUEl0tpXEAMXnci-480x650.jpeg'}];
 let cart=JSON.parse(localStorage.getItem('efits_cart')||'[]');let favs=JSON.parse(localStorage.getItem('efits_favs')||'[]');let walletBalance=parseInt(localStorage.getItem('efits_wallet')||'0');
-function isValidEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}function getPasswordScore(pw){let s=0;if(pw.length>=8)s++;if(/[A-Z]/.test(pw))s++;if(/[a-z]/.test(pw))s++;if(/[0-9]/.test(pw))s++;if(/[^A-Za-z0-9]/.test(pw))s++;return s;}
-function checkStrength(){let pw=document.getElementById('password').value;let wrap=document.getElementById('strengthWrap');if(!pw){wrap.style.display='none';return;}wrap.style.display='block';let score=getPasswordScore(pw);let bars=[1,2,3,4,5].map(i=>document.getElementById('bar'+i));bars.forEach(b=>b.className='');let text=document.getElementById('strengthText');if(score<=2){bars.slice(0,2).forEach(b=>b.className='active-weak');text.textContent='WEAK';}else if(score<=3){bars.slice(0,3).forEach(b=>b.className='active-medium');text.textContent='MEDIUM';}else{bars.forEach(b=>b.className='active-strong');text.textContent='STRONG';}}
+let users=JSON.parse(localStorage.getItem('efits_users')||'[]');
+function isValidEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+function getPasswordScore(pw){let s=0;if(pw.length>=8)s++;if(/[A-Z]/.test(pw))s++;if(/[a-z]/.test(pw))s++;if(/[0-9]/.test(pw))s++;if(/[^A-Za-z0-9]/.test(pw))s++;return s;}
+function checkStrength(){
+  let pw=document.getElementById('password').value;let wrap=document.getElementById('strengthWrap');
+  if(!pw){wrap.style.display='none';document.getElementById('passError').textContent='';return;}
+  wrap.style.display='block';
+  if(tab==='signup') document.getElementById('rules').style.display='block';
+  let score=getPasswordScore(pw);let bars=[1,2,3,4,5].map(i=>document.getElementById('bar'+i));bars.forEach(b=>b.className='');let text=document.getElementById('strengthText');
+  if(score<=2){bars.slice(0,2).forEach(b=>b.className='active-weak');text.textContent='WEAK - Your password is too weak!';text.className='strength-text weak';}
+  else if(score<=3){bars.slice(0,3).forEach(b=>b.className='active-medium');text.textContent='MEDIUM - Add more to make it strong';text.className='strength-text medium';}
+  else if(score===4){bars.slice(0,4).forEach(b=>b.className='active-strong');text.textContent='STRONG';text.className='strength-text strong';}
+  else{bars.forEach(b=>b.className='active-strong');text.textContent='VERY STRONG ✓';text.className='strength-text strong';}
+  document.getElementById('ruleLen').textContent=(pw.length>=8?'✓':'✗')+' At least 8 characters';document.getElementById('ruleLen').className=pw.length>=8?'ok':'';
+  document.getElementById('ruleUpper').textContent=(/[A-Z]/.test(pw)?'✓':'✗')+' One uppercase';document.getElementById('ruleUpper').className=/[A-Z]/.test(pw)?'ok':'';
+  document.getElementById('ruleLower').textContent=(/[a-z]/.test(pw)?'✓':'✗')+' One lowercase';document.getElementById('ruleLower').className=/[a-z]/.test(pw)?'ok':'';
+  document.getElementById('ruleNum').textContent=(/[0-9]/.test(pw)?'✓':'✗')+' One number';document.getElementById('ruleNum').className=/[0-9]/.test(pw)?'ok':'';
+  document.getElementById('ruleSpecial').textContent=(/[^A-Za-z0-9]/.test(pw)?'✓':'✗')+' One special';document.getElementById('ruleSpecial').className=/[^A-Za-z0-9]/.test(pw)?'ok':'';
+  if(tab==='signup' && score<5){document.getElementById('passError').textContent='Your password is too weak! Must have 8 chars, uppercase, lowercase, number & special.';}
+  else if(tab==='signup'){document.getElementById('passError').textContent='';}
+}
 function validateEmail(){let e=document.getElementById('email').value.trim();let err=document.getElementById('emailError');if(!e){err.textContent='';return false}if(!isValidEmail(e)){err.textContent='Invalid email';return false}err.textContent='';return true}
-function switchTab(t){tab=t;document.getElementById('tLogin').classList.toggle('active',t==='login');document.getElementById('tSignup').classList.toggle('active',t==='signup');document.getElementById('signupExtra').style.display=t==='signup'?'block':'none';}
+function validateConfirm(){let p=document.getElementById('password').value;let c=document.getElementById('confirm').value;let err=document.getElementById('confirmError');if(tab!=='signup')return true;if(c && p!==c){err.textContent='Passwords do not match';return false}err.textContent='';return true}
+function switchTab(t){tab=t;document.getElementById('tLogin').classList.toggle('active',t==='login');document.getElementById('tSignup').classList.toggle('active',t==='signup');document.getElementById('signupExtra').style.display=t==='signup'?'block':'none';document.getElementById('signupConfirm').style.display=t==='signup'?'block':'none';document.getElementById('rules').style.display=t==='signup' && document.getElementById('password').value?'block':'none';document.getElementById('mainBtn').textContent=t==='login'?'ENTER BOUTIQUE':'CREATE ACCOUNT';document.getElementById('authHint').textContent=t==='login'?'New here? Tap SIGN UP to create account.':'Already have account? Tap LOGIN.';document.getElementById('emailError').textContent='';document.getElementById('passError').textContent='';checkStrength();}
 function toggleEye(id,iconId){let i=document.getElementById(id);let ic=document.getElementById(iconId);if(i.type==='password'){i.type='text';ic.className='fa-regular fa-eye-slash';}else{i.type='password';ic.className='fa-regular fa-eye';}}
-function enterBoutique(){let e=document.getElementById('email').value.trim();let p=document.getElementById('password').value;if(!isValidEmail(e)){showBrandToast('Please enter valid email');return;}if(!p){document.getElementById('passError').textContent='Password required';return;}if(tab==='signup'){let score=getPasswordScore(p);if(score<5){showBrandToast('Password must have: 8 chars, uppercase, lowercase, number & special');return;}}document.getElementById('auth').style.display='none';document.getElementById('shop').classList.add('active');renderProducts();updateWalletUI();}
-function openForgot(){document.getElementById('forgotModal').classList.add('show')}function closeForgot(){document.getElementById('forgotModal').classList.remove('show')}function sendReset(){let e=document.getElementById('forgotEmail').value.trim();if(!isValidEmail(e)){showBrandToast('Enter valid email');return}closeForgot();showBrandToast('Reset link sent to '+e);}
+function sendOTP(){let phone=document.getElementById('phone').value.trim();if(!phone || phone.replace(/\D/g,'').length<10){document.getElementById('phoneError').textContent='Enter valid phone number first (10 or 11 digits)';return;}generatedOTP=Math.floor(1000+Math.random()*9000).toString();phoneVerified=false;document.getElementById('phoneError').textContent='';document.getElementById('phoneSuccess').textContent='';showBrandToast('Demo OTP for '+phone+' is: '+generatedOTP+' — Type it and tap VERIFY PHONE');}
+function verifyOTP(){let code=document.getElementById('otpInput').value.trim();if(!generatedOTP){document.getElementById('phoneError').textContent='Tap SEND CODE first';return;}if(code===generatedOTP){phoneVerified=true;document.getElementById('phoneError').textContent='';document.getElementById('phoneSuccess').textContent='✓ Phone verified!';showBrandToast('Phone verified ✓');}else{document.getElementById('phoneError').textContent='Wrong code. Try again.';phoneVerified=false;}}
+function handleAuth(){if(tab==='login')doLogin();else doSignup();}
+function doLogin(){
+  let e=document.getElementById('email').value.trim().toLowerCase();let p=document.getElementById('password').value;
+  if(!isValidEmail(e)){showBrandToast('Please enter valid email');validateEmail();return;}
+  if(!p){document.getElementById('passError').textContent='Password required';return;}
+  let found=users.find(u=>u.email===e);
+  if(!found){showBrandToast('This email is not registered. Please Sign Up first.');document.getElementById('emailError').textContent='This email is not registered. Please Sign Up.';setTimeout(()=>switchTab('signup'),1200);return;}
+  if(found.password!==p){document.getElementById('passError').textContent='Wrong password for this email. Try again or tap Forgot password.';showBrandToast('Wrong password. Please try again.');return;}
+  currentUser=found;localStorage.setItem('efits_current',JSON.stringify(found));enterShop(found);
+}
+function doSignup(){
+  let fullName=document.getElementById('fullName').value.trim();let username=document.getElementById('username').value.trim().toLowerCase();let phone=document.getElementById('phone').value.trim();let e=document.getElementById('email').value.trim().toLowerCase();let p=document.getElementById('password').value;let c=document.getElementById('confirm').value;
+  if(!fullName || fullName.split(' ').length<2){document.getElementById('fullNameError').textContent='Enter your full name (first + last)';showBrandToast('Enter your full name');return;}
+  document.getElementById('fullNameError').textContent='';
+  if(!username || username.length<3){document.getElementById('usernameError').textContent='Username must be at least 3 characters';return;}
+  if(users.find(u=>u.username===username)){document.getElementById('usernameError').textContent='This username is already taken. Try another.';return;}
+  document.getElementById('usernameError').textContent='';
+  if(!phone || phone.replace(/\D/g,'').length<10){document.getElementById('phoneError').textContent='Enter valid phone number';return;}
+  if(!phoneVerified){document.getElementById('phoneError').textContent='Please verify your phone first — tap SEND CODE then VERIFY.';showBrandToast('Please verify your phone number first');return;}
+  if(!isValidEmail(e)){showBrandToast('Please enter valid email');validateEmail();return;}
+  if(users.find(u=>u.email===e)){document.getElementById('emailError').textContent='This email is already registered. Please Login.';showBrandToast('This email is already registered. Please Login.');setTimeout(()=>switchTab('login'),1200);return;}
+  let score=getPasswordScore(p);
+  if(score<5){document.getElementById('passError').textContent='Your password is too weak! Must have 8 chars, uppercase, lowercase, number & special.';showBrandToast('Your password is too weak! Make it stronger.');return;}
+  if(p!==c){document.getElementById('confirmError').textContent='Passwords do not match';return;}
+  let newUser={fullName,username,phone,email:e,password:p,created:Date.now()};users.push(newUser);localStorage.setItem('efits_users',JSON.stringify(users));currentUser=newUser;localStorage.setItem('efits_current',JSON.stringify(newUser));showBrandToast('Welcome '+fullName+'! Account created ✓');setTimeout(()=>enterShop(newUser),800);
+}
+function enterShop(user){document.getElementById('auth').style.display='none';document.getElementById('shop').classList.add('active');document.getElementById('welcomeUser').textContent=user?('Hi, '+user.fullName.split(' ')[0]+' (@'+user.username+')'):'';renderProducts();updateWalletUI();}
+function logoutUser(){localStorage.removeItem('efits_current');location.reload();}
+function openForgot(){document.getElementById('forgotModal').classList.add('show')}function closeForgot(){document.getElementById('forgotModal').classList.remove('show')}function sendReset(){let e=document.getElementById('forgotEmail').value.trim().toLowerCase();if(!isValidEmail(e)){showBrandToast('Enter valid email');return}let found=users.find(u=>u.email===e);if(!found){showBrandToast('This email is not registered. Please Sign Up.');return}closeForgot();showBrandToast('Reset link sent to '+e);}
 function showBrandToast(msg){document.getElementById('toastMsg').textContent=msg;document.getElementById('brandToast').classList.add('show');}function closeToast(){document.getElementById('brandToast').classList.remove('show')}
 function renderProducts(){let wrap=document.getElementById('products');wrap.innerHTML='';products.forEach(p=>{let isFav=favs.includes(p.id);let div=document.createElement('div');div.className='card';div.innerHTML=`<button class="fav-btn" onclick="event.stopPropagation();toggleFav(${p.id})"><i class="${isFav?'fa-solid':'fa-regular'} fa-heart"></i></button><img src="${p.img}"><div class="info"><h4>${p.name}</h4><div class="row"><p>₦${p.price.toLocaleString()}</p><button class="add" onclick="event.stopPropagation();quickAdd(${p.id})">ADD</button></div></div>`;div.onclick=()=>openProduct(p.id);wrap.appendChild(div);});updateBadges();}
 function openProduct(id){currentProduct=products.find(x=>x.id===id);document.getElementById('pImg').src=currentProduct.img;document.getElementById('pName').textContent=currentProduct.name;document.getElementById('pPrice').textContent='₦'+currentProduct.price.toLocaleString();let isFav=favs.includes(id);document.getElementById('modalHeart').className=(isFav?'fa-solid':'fa-regular')+' fa-heart';document.getElementById('productModal').classList.add('show');}
@@ -168,7 +236,6 @@ function payTransfer(){completeOrder('Bank Transfer 9066069350');}
 function payCard(){let num=document.getElementById('cardNumber').value.trim();if(num.replace(/\s/g,'').length<16){showBrandToast('Invalid card');return}completeOrder('Card '+num.slice(-4));}
 function completeOrder(method){let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);let text=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty}`}).join('%0A');closeCheckout();showBrandToast('Payment successful via '+method);let msg=`Hi E_FITS, I just paid via ${method}!%0AOrder:%0A${text}%0ATotal: ₦${total}`;setTimeout(()=>window.open('https://wa.me/2349066069350?text='+msg,'_blank'),800);cart=[];localStorage.setItem('efits_cart',JSON.stringify(cart));renderProducts();renderCart();}
 function formatCard(){let i=document.getElementById('cardNumber');let v=i.value.replace(/\D/g,'').slice(0,16);let f=v.replace(/(.{4})/g,'$1 ').trim();i.value=f;}
-function validateConfirm(){}
 </script>
 </body>
 </html>
