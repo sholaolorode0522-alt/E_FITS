@@ -86,16 +86,17 @@ html.logged-in #shop{display:block !important}
 .profile-row span:last-child{font-weight:600;text-align:right;word-break:break-word}
 .addr-option{border:1px solid var(--line);background:#fff;padding:12px;margin-bottom:8px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
 .addr-option.active{border-color:var(--burgundy);background:var(--beige)}
-/* PRODUCT POPUP FIXES */
 .close-btn{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.95);border:none;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--burgundy);cursor:pointer;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.2)}
-.gallery-wrap{position:relative;overflow:hidden;background:#eee}
-.gallery-track{display:flex;transition:transform .35s ease}
-.gallery-track img{width:100%;flex-shrink:0;aspect-ratio:4/5;object-fit:cover}
-.gallery-arrow{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.9);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;color:var(--burgundy)}
+.gallery-wrap{position:relative;overflow:hidden;background:#eee;height:480px;touch-action:pan-y}
+.gallery-track{display:flex;flex-direction:column;transition:transform .35s ease}
+.gallery-track img{width:100%;height:480px;flex-shrink:0;object-fit:cover}
+.gallery-arrow{position:absolute;left:50%;transform:translateX(-50%);width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.9);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;color:var(--burgundy);font-size:18px}
 .gallery-dots{display:flex;gap:6px;justify-content:center;padding:10px 0 2px}
 .gallery-dots span{width:7px;height:7px;border-radius:50%;background:var(--line);cursor:pointer}
-.gallery-dots span.active{background:var(--burgundy);width:18px;border-radius:10px}
-.swipe-hint{text-align:center;font-size:10px;color:var(--muted);letter-spacing:1px;padding-bottom:4px}
+.gallery-dots span.active{background:var(--burgundy);height:7px;width:18px;border-radius:10px}
+.swipe-hint{text-align:center;font-size:11px;color:var(--burgundy);letter-spacing:1px;padding:8px;background:var(--beige);font-weight:600}
+.progress-bar{height:3px;background:var(--line);margin:0 16px}
+.progress-bar div{height:100%;background:var(--burgundy);transition:width .3s}
 </style>
 </head>
 <body>
@@ -134,17 +135,18 @@ html.logged-in #shop{display:block !important}
 
 <div id="overlay" class="overlay"></div>
 
-<!-- PRODUCT MODAL - FIXED SCROLL + X + GALLERY -->
+<!-- PRODUCT MODAL - SWIPE DOWN TO SEE MORE, LAST ONE CLOSES -->
 <div id="productModal" class="modal" onclick="if(event.target==this)closeProduct()">
   <div class="modal-box" id="productBox">
     <button class="close-btn" onclick="closeProduct()" title="Back">✕</button>
     <div class="gallery-wrap" id="galleryWrap">
       <div class="gallery-track" id="galleryTrack"></div>
-      <button class="gallery-arrow" style="left:10px" onclick="prevImg(event)">‹</button>
-      <button class="gallery-arrow" style="right:10px" onclick="nextImg(event)">›</button>
+      <button class="gallery-arrow" style="top:10px" onclick="prevImg(event)">↑</button>
+      <button class="gallery-arrow" style="bottom:10px" onclick="nextImgOrClose(event)">↓</button>
     </div>
     <div class="gallery-dots" id="galleryDots"></div>
-    <p class="swipe-hint">← SWIPE FOR MORE COLOURS →</p>
+    <div class="progress-bar"><div id="progressFill" style="width:33%"></div></div>
+    <p class="swipe-hint" id="swipeHint">↓ SWIPE DOWN FOR NEXT COLOUR ↓</p>
     <div style="padding:8px 16px 16px">
       <h3 id="pName" class="play"></h3>
       <p id="pPrice" style="color:var(--muted);margin:6px 0"></p>
@@ -299,7 +301,7 @@ function openForgot(){document.getElementById('forgotModal').classList.add('show
 function showBrandToast(msg){document.getElementById('toastMsg').textContent=msg;document.getElementById('brandToast').classList.add('show');}function closeToast(){document.getElementById('brandToast').classList.remove('show')}
 function renderProducts(){let wrap=document.getElementById('products');wrap.innerHTML='';products.forEach(p=>{let isFav=favs.includes(p.id);let div=document.createElement('div');div.className='card';div.innerHTML=`<button class="fav-btn" onclick="event.stopPropagation();toggleFav(${p.id})"><i class="${isFav?'fa-solid':'fa-regular'} fa-heart"></i></button><img src="${p.img}"><div class="info"><h4>${p.name}</h4><div class="row"><p>₦${p.price.toLocaleString()}</p><button class="add" onclick="event.stopPropagation();quickAdd(${p.id})">ADD</button></div></div>`;div.onclick=()=>openProduct(p.id);wrap.appendChild(div);});updateBadges();}
 
-// --- PRODUCT GALLERY + SCROLL FIX ---
+// --- PRODUCT GALLERY: SWIPE DOWN FOR NEXT, LAST SWIPE DOWN CLOSES ---
 function openProduct(id){
   currentProduct=products.find(x=>x.id===id); currentImgIndex=0;
   document.getElementById('pName').textContent=currentProduct.name;
@@ -310,14 +312,20 @@ function openProduct(id){
   document.getElementById('productModal').classList.add('show');
   document.getElementById('productBox').scrollTop=0;
   lockScroll();
-  // swipe handlers for gallery
   let wrap=document.getElementById('galleryWrap');
-  wrap.ontouchstart=(e)=>{touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;};
-  wrap.ontouchend=(e)=>{let dx=e.changedTouches[0].clientX-touchStartX;let dy=e.changedTouches[0].clientY-touchStartY;if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)){if(dx<0) nextImg(); else prevImg();}};
-  // swipe down on whole popup to close
-  let box=document.getElementById('productBox');
-  box.ontouchstart=(e)=>{touchStartY=e.touches[0].clientY;};
-  box.ontouchend=(e)=>{let dy=e.changedTouches[0].clientY-touchStartY;if(dy>120 && box.scrollTop===0){closeProduct();}};
+  wrap.ontouchstart=(e)=>{touchStartY=e.touches[0].clientY;touchStartX=e.touches[0].clientX;};
+  wrap.ontouchend=(e)=>{
+    let dy=e.changedTouches[0].clientY-touchStartY;
+    let dx=e.changedTouches[0].clientX-touchStartX;
+    // Only handle vertical swipe down/up
+    if(Math.abs(dy)>50 && Math.abs(dy)>Math.abs(dx)){
+      if(dy>0){ // swipe DOWN
+        nextImgOrClose();
+      } else { // swipe UP = back
+        prevImg();
+      }
+    }
+  };
 }
 function renderGallery(){
   let track=document.getElementById('galleryTrack');track.innerHTML='';
@@ -329,15 +337,30 @@ function renderGallery(){
 }
 function updateGallery(){
   let track=document.getElementById('galleryTrack');
-  track.style.transform='translateX(-'+(currentImgIndex*100)+'%)';
+  track.style.transform='translateY(-'+(currentImgIndex*480)+'px)';
   let dots=document.getElementById('galleryDots').children;
   for(let i=0;i<dots.length;i++){dots[i].className=i===currentImgIndex?'active':'';}
   let colors=currentProduct.colors||[];
-  document.getElementById('pColor').textContent=colors[currentImgIndex]?('Colour '+(currentImgIndex+1)+' of '+colors.length+': '+colors[currentImgIndex]):('Photo '+(currentImgIndex+1)+' of '+(currentProduct.gallery||[]).length);
+  let total=(currentProduct.gallery||[]).length;
+  document.getElementById('pColor').textContent=colors[currentImgIndex]?('Colour '+(currentImgIndex+1)+' of '+total+': '+colors[currentImgIndex]):('Photo '+(currentImgIndex+1)+' of '+total);
+  document.getElementById('progressFill').style.width=((currentImgIndex+1)/total*100)+'%';
+  let hint=document.getElementById('swipeHint');
+  if(currentImgIndex===total-1){ hint.textContent='↓ LAST COLOUR - SWIPE DOWN AGAIN TO GO BACK TO SHOP ↓'; hint.style.background='#3a1414'; hint.style.color='#fff'; }
+  else { hint.textContent='↓ SWIPE DOWN FOR NEXT COLOUR ('+(currentImgIndex+1)+' of '+total+') ↓'; hint.style.background='#f5efe6'; hint.style.color='#3a1414'; }
 }
 function goToImg(i){let total=(currentProduct.gallery||[]).length;currentImgIndex=Math.max(0,Math.min(i,total-1));updateGallery();}
-function nextImg(e){if(e) e.stopPropagation();let total=(currentProduct.gallery||[]).length;currentImgIndex=(currentImgIndex+1)%total;updateGallery();}
-function prevImg(e){if(e) e.stopPropagation();let total=(currentProduct.gallery||[]).length;currentImgIndex=(currentImgIndex-1+total)%total;updateGallery();}
+function nextImgOrClose(e){
+  if(e) e.stopPropagation();
+  let total=(currentProduct.gallery||[]).length;
+  if(currentImgIndex>=total-1){
+    // LAST ONE - CLOSE BACK TO SHOP
+    closeProduct();
+  } else {
+    currentImgIndex++; updateGallery();
+  }
+}
+function nextImg(e){ nextImgOrClose(e); }
+function prevImg(e){ if(e) e.stopPropagation(); if(currentImgIndex>0){currentImgIndex--; updateGallery();} }
 function closeProduct(){document.getElementById('productModal').classList.remove('show');unlockScroll();}
 function quickAdd(id){addToCart(id);showBrandToast('Added to bag');}function addToCartFromModal(){addToCart(currentProduct.id);showBrandToast('Added to bag');}
 function addToCart(id){let ex=cart.find(x=>x.id===id);if(ex)ex.qty++;else cart.push({id,qty:1});localStorage.setItem('efits_cart',JSON.stringify(cart));renderProducts();renderCart();}
