@@ -61,6 +61,7 @@ html.logged-in #shop{display:block !important}
 .card .info .row{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
 .card .info p{font-size:12px;color:var(--muted)}
 .card .add{font-size:10px;background:var(--burgundy);color:var(--cream);border:none;padding:4px 8px;cursor:pointer}
+.print-badge{position:absolute;left:8px;bottom:8px;background:rgba(58,20,20,.92);color:#fff;font-size:9px;letter-spacing:.5px;padding:5px 7px;border-radius:20px;z-index:2;display:flex;align-items:center;gap:4px}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:79;display:none}
 .overlay.show{display:block}
 .panel{position:fixed;top:0;right:0;width:360px;max-width:92vw;height:100dvh;background:#fff;z-index:80;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column}
@@ -87,16 +88,16 @@ html.logged-in #shop{display:block !important}
 .addr-option{border:1px solid var(--line);background:#fff;padding:12px;margin-bottom:8px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
 .addr-option.active{border-color:var(--burgundy);background:var(--beige)}
 .close-btn{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.95);border:none;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--burgundy);cursor:pointer;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.2)}
-.gallery-wrap{position:relative;overflow:hidden;background:#eee;height:480px;touch-action:pan-y}
-.gallery-track{display:flex;flex-direction:column;transition:transform .35s ease}
-.gallery-track img{width:100%;height:480px;flex-shrink:0;object-fit:cover}
-.gallery-arrow{position:absolute;left:50%;transform:translateX(-50%);width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.9);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;color:var(--burgundy);font-size:18px}
-.gallery-dots{display:flex;gap:6px;justify-content:center;padding:10px 0 2px}
-.gallery-dots span{width:7px;height:7px;border-radius:50%;background:var(--line);cursor:pointer}
-.gallery-dots span.active{background:var(--burgundy);height:7px;width:18px;border-radius:10px}
-.swipe-hint{text-align:center;font-size:11px;color:var(--burgundy);letter-spacing:1px;padding:8px;background:var(--beige);font-weight:600}
-.progress-bar{height:3px;background:var(--line);margin:0 16px}
-.progress-bar div{height:100%;background:var(--burgundy);transition:width .3s}
+/* TIKTOK STYLE - REAL SCROLL, NO ARROWS */
+.gallery-wrap{height:480px;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:#eee;scrollbar-width:none}
+.gallery-wrap::-webkit-scrollbar{display:none}
+.gallery-item{height:480px;scroll-snap-align:start;position:relative;flex-shrink:0}
+.gallery-item img{width:100%;height:100%;object-fit:cover}
+.gallery-label{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;padding:6px 10px;border-radius:20px}
+.gallery-counter{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:5px 9px;border-radius:20px}
+.swipe-hint{text-align:center;font-size:11px;color:var(--burgundy);letter-spacing:1px;padding:10px;background:var(--beige);font-weight:600}
+.print-dot{width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.print-dot.active{border-color:var(--burgundy);transform:scale(1.15)}
 </style>
 </head>
 <body>
@@ -135,22 +136,18 @@ html.logged-in #shop{display:block !important}
 
 <div id="overlay" class="overlay"></div>
 
-<!-- PRODUCT MODAL - SWIPE DOWN TO SEE MORE, LAST ONE CLOSES -->
+<!-- PRODUCT MODAL - TIKTOK SCROLL, NO ARROWS -->
 <div id="productModal" class="modal" onclick="if(event.target==this)closeProduct()">
   <div class="modal-box" id="productBox">
     <button class="close-btn" onclick="closeProduct()" title="Back">✕</button>
-    <div class="gallery-wrap" id="galleryWrap">
-      <div class="gallery-track" id="galleryTrack"></div>
-      <button class="gallery-arrow" style="top:10px" onclick="prevImg(event)">↑</button>
-      <button class="gallery-arrow" style="bottom:10px" onclick="nextImgOrClose(event)">↓</button>
-    </div>
-    <div class="gallery-dots" id="galleryDots"></div>
-    <div class="progress-bar"><div id="progressFill" style="width:33%"></div></div>
-    <p class="swipe-hint" id="swipeHint">↓ SWIPE DOWN FOR NEXT COLOUR ↓</p>
+    <div class="gallery-wrap" id="galleryWrap"></div>
+    <p class="swipe-hint" id="swipeHint">↑ SWIPE UP FOR MORE PRINTS ↑</p>
     <div style="padding:8px 16px 16px">
       <h3 id="pName" class="play"></h3>
       <p id="pPrice" style="color:var(--muted);margin:6px 0"></p>
-      <p id="pColor" style="font-size:12px;color:var(--burgundy);font-weight:600;margin-bottom:4px"></p>
+      <p id="pColor" style="font-size:12px;color:var(--burgundy);font-weight:600;margin-bottom:8px"></p>
+      <p style="font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:6px">SELECT PRINT:</p>
+      <div id="printDots" style="display:flex;gap:10px;margin-bottom:10px"></div>
       <p id="pDesc" style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px"></p>
       <div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="addToCartFromModal()">ADD TO BAG</button><button style="width:46px;border:1px solid var(--line);background:#fff;cursor:pointer" onclick="toggleFavFromModal()"><i id="modalHeart" class="fa-regular fa-heart"></i></button></div>
       <button class="btn btn-outline" style="margin-top:10px" onclick="closeProduct()">← BACK TO SHOP</button>
@@ -167,7 +164,7 @@ html.logged-in #shop{display:block !important}
 <div id="brandToast" class="toast"><h4 class="play">E_FITS</h4><p id="toastMsg"></p><button class="btn" style="margin-top:12px;padding:10px" onclick="closeToast()">OK</button></div>
 
 <script>
-let tab='login'; let currentProduct=null; let generatedOTP=''; let phoneVerified=false; let currentUser=null; let deliveryMode='same'; let currentImgIndex=0; let scrollPos=0; let touchStartY=0; let touchStartX=0;
+let tab='login'; let currentProduct=null; let generatedOTP=''; let phoneVerified=false; let currentUser=null; let deliveryMode='same'; let currentImgIndex=0; let scrollPos=0; let selectedPrint=0;
 let products=[
  {id:1,name:'ADIRE ANO BOUBOU',price:18500,desc:'Flowing Adire Boubou - Hand-dyed, free size, perfect for owambe.',colors:['Indigo / Pink','Blue Mix','Earth Tone'],img:'https://i.etsystatic.com/36417893/r/il/6ab6f9/7581955343/il_fullxfull.7581955343_h7la.jpg',gallery:['https://i.etsystatic.com/36417893/r/il/6ab6f9/7581955343/il_fullxfull.7581955343_h7la.jpg','https://shopsincereonline.com/cdn/shop/files/1adire.jpg?v=1701147385&width=600','https://i.etsystatic.com/55131899/r/il/6e9f39/8165019105/il_1080xN.8165019105_32kw.jpg']},
  {id:2,name:'INDIGO DYED DRESS',price:22000,desc:'Classic Indigo Adire dress - Fitted, elegant, hand-dyed.',colors:['Deep Indigo','Light Indigo','Indigo White'],img:'https://concubycm.com/cdn/shop/files/Ugodress_Adire_Asooke_2ab7800f-49de-443e-9953-afe8551aec1e.jpg?v=1777495413&width=600',gallery:['https://concubycm.com/cdn/shop/files/Ugodress_Adire_Asooke_2ab7800f-49de-443e-9953-afe8551aec1e.jpg?v=1777495413&width=600','https://i.etsystatic.com/36417893/r/il/6ab6f9/7581955343/il_fullxfull.7581955343_h7la.jpg','https://i.pinimg.com/736x/89/f9/7f/89f97f14eb57ffe93fca7e779ef14815.jpg']},
@@ -299,120 +296,55 @@ function getDeliveryAddress(){
 }
 function openForgot(){document.getElementById('forgotModal').classList.add('show');lockScroll();}function closeForgot(){document.getElementById('forgotModal').classList.remove('show');unlockScroll();}function sendReset(){let e=document.getElementById('forgotEmail').value.trim().toLowerCase();if(!isValidEmail(e)){showBrandToast('Enter valid email');return}let found=users.find(u=>u.email===e);if(!found){showBrandToast('This email is not registered. Please Sign Up.');return}closeForgot();showBrandToast('Reset link sent to '+e);}
 function showBrandToast(msg){document.getElementById('toastMsg').textContent=msg;document.getElementById('brandToast').classList.add('show');}function closeToast(){document.getElementById('brandToast').classList.remove('show')}
-function renderProducts(){let wrap=document.getElementById('products');wrap.innerHTML='';products.forEach(p=>{let isFav=favs.includes(p.id);let div=document.createElement('div');div.className='card';div.innerHTML=`<button class="fav-btn" onclick="event.stopPropagation();toggleFav(${p.id})"><i class="${isFav?'fa-solid':'fa-regular'} fa-heart"></i></button><img src="${p.img}"><div class="info"><h4>${p.name}</h4><div class="row"><p>₦${p.price.toLocaleString()}</p><button class="add" onclick="event.stopPropagation();quickAdd(${p.id})">ADD</button></div></div>`;div.onclick=()=>openProduct(p.id);wrap.appendChild(div);});updateBadges();}
+function renderProducts(){
+  let wrap=document.getElementById('products');wrap.innerHTML='';
+  products.forEach(p=>{
+    let isFav=favs.includes(p.id);
+    let galleryCount=(p.gallery||[]).length;
+    let printBadge=galleryCount>1?`<div class="print-badge">🎨 Available in ${galleryCount} Prints • Tap to view</div>`:'';
+    let div=document.createElement('div');div.className='card';
+    div.innerHTML=`<button class="fav-btn" onclick="event.stopPropagation();toggleFav(${p.id})"><i class="${isFav?'fa-solid':'fa-regular'} fa-heart"></i></button><img src="${p.img}">${printBadge}<div class="info"><h4>${p.name}</h4><p style="font-size:10px;color:#15803d;font-weight:600;margin-top:2px">${galleryCount>1?'✓ Available in different prints':''}</p><div class="row"><p>₦${p.price.toLocaleString()}</p><button class="add" onclick="event.stopPropagation();quickAdd(${p.id})">ADD</button></div></div>`;
+    div.onclick=()=>openProduct(p.id);
+    wrap.appendChild(div);
+  });
+  updateBadges();
+}
 
-// --- PRODUCT GALLERY: SWIPE DOWN FOR NEXT, LAST SWIPE DOWN CLOSES ---
+// --- TIKTOK SCROLL GALLERY - REAL SCROLL, NO ARROWS ---
 function openProduct(id){
-  currentProduct=products.find(x=>x.id===id); currentImgIndex=0;
+  currentProduct=products.find(x=>x.id===id); selectedPrint=0; currentImgIndex=0;
   document.getElementById('pName').textContent=currentProduct.name;
   document.getElementById('pPrice').textContent='₦'+currentProduct.price.toLocaleString();
   document.getElementById('pDesc').textContent=currentProduct.desc||'Authentic hand-dyed Adire. Bold. Intentional. Minimal.';
   let isFav=favs.includes(id);document.getElementById('modalHeart').className=(isFav?'fa-solid':'fa-regular')+' fa-heart';
-  renderGallery();
-  document.getElementById('productModal').classList.add('show');
-  document.getElementById('productBox').scrollTop=0;
-  lockScroll();
-  let wrap=document.getElementById('galleryWrap');
-  wrap.ontouchstart=(e)=>{touchStartY=e.touches[0].clientY;touchStartX=e.touches[0].clientX;};
-  wrap.ontouchend=(e)=>{
-    let dy=e.changedTouches[0].clientY-touchStartY;
-    let dx=e.changedTouches[0].clientX-touchStartX;
-    // Only handle vertical swipe down/up
-    if(Math.abs(dy)>50 && Math.abs(dy)>Math.abs(dx)){
-      if(dy>0){ // swipe DOWN
-        nextImgOrClose();
-      } else { // swipe UP = back
-        prevImg();
-      }
+  let wrap=document.getElementById('galleryWrap'); wrap.innerHTML='';
+  let imgs=currentProduct.gallery||[currentProduct.img];
+  let colors=currentProduct.colors||[];
+  imgs.forEach((src,i)=>{
+    let item=document.createElement('div'); item.className='gallery-item';
+    item.innerHTML=`<img src="${src}"><div class="gallery-counter">${i+1} / ${imgs.length}</div><div class="gallery-label">${colors[i]||'Print '+(i+1)} ${i===imgs.length-1?'• Last Print':''}</div>`;
+    wrap.appendChild(item);
+  });
+  // Update selected print on scroll
+  wrap.onscroll=()=>{
+    let idx=Math.round(wrap.scrollTop/480);
+    if(idx!==selectedPrint && idx>=0 && idx<imgs.length){
+      selectedPrint=idx; currentImgIndex=idx;
+      updatePrintUI();
+    }
+    // If user scrolls to very bottom past last image, show close hint
+    if(wrap.scrollTop + wrap.clientHeight >= wrap.scrollHeight - 5){
+      document.getElementById('swipeHint').textContent='↓ YOU REACH LAST PRINT - SCROLL DOWN FOR DETAILS OR TAP X TO GO BACK ↓';
     }
   };
+  updatePrintUI();
+  document.getElementById('productModal').classList.add('show');
+  document.getElementById('productBox').scrollTop=0;
+  wrap.scrollTop=0;
+  lockScroll();
 }
-function renderGallery(){
-  let track=document.getElementById('galleryTrack');track.innerHTML='';
-  let imgs=currentProduct.gallery||[currentProduct.img];
-  imgs.forEach(src=>{let im=document.createElement('img');im.src=src;track.appendChild(im);});
-  let dots=document.getElementById('galleryDots');dots.innerHTML='';
-  imgs.forEach((_,i)=>{let d=document.createElement('span');d.onclick=()=>goToImg(i);dots.appendChild(d);});
-  updateGallery();
-}
-function updateGallery(){
-  let track=document.getElementById('galleryTrack');
-  track.style.transform='translateY(-'+(currentImgIndex*480)+'px)';
-  let dots=document.getElementById('galleryDots').children;
-  for(let i=0;i<dots.length;i++){dots[i].className=i===currentImgIndex?'active':'';}
+function updatePrintUI(){
   let colors=currentProduct.colors||[];
   let total=(currentProduct.gallery||[]).length;
-  document.getElementById('pColor').textContent=colors[currentImgIndex]?('Colour '+(currentImgIndex+1)+' of '+total+': '+colors[currentImgIndex]):('Photo '+(currentImgIndex+1)+' of '+total);
-  document.getElementById('progressFill').style.width=((currentImgIndex+1)/total*100)+'%';
-  let hint=document.getElementById('swipeHint');
-  if(currentImgIndex===total-1){ hint.textContent='↓ LAST COLOUR - SWIPE DOWN AGAIN TO GO BACK TO SHOP ↓'; hint.style.background='#3a1414'; hint.style.color='#fff'; }
-  else { hint.textContent='↓ SWIPE DOWN FOR NEXT COLOUR ('+(currentImgIndex+1)+' of '+total+') ↓'; hint.style.background='#f5efe6'; hint.style.color='#3a1414'; }
-}
-function goToImg(i){let total=(currentProduct.gallery||[]).length;currentImgIndex=Math.max(0,Math.min(i,total-1));updateGallery();}
-function nextImgOrClose(e){
-  if(e) e.stopPropagation();
-  let total=(currentProduct.gallery||[]).length;
-  if(currentImgIndex>=total-1){
-    // LAST ONE - CLOSE BACK TO SHOP
-    closeProduct();
-  } else {
-    currentImgIndex++; updateGallery();
-  }
-}
-function nextImg(e){ nextImgOrClose(e); }
-function prevImg(e){ if(e) e.stopPropagation(); if(currentImgIndex>0){currentImgIndex--; updateGallery();} }
-function closeProduct(){document.getElementById('productModal').classList.remove('show');unlockScroll();}
-function quickAdd(id){addToCart(id);showBrandToast('Added to bag');}function addToCartFromModal(){addToCart(currentProduct.id);showBrandToast('Added to bag');}
-function addToCart(id){let ex=cart.find(x=>x.id===id);if(ex)ex.qty++;else cart.push({id,qty:1});localStorage.setItem('efits_cart',JSON.stringify(cart));renderProducts();renderCart();}
-function renderCart(){let body=document.getElementById('cartBody');body.innerHTML='';let total=0;let count=0;if(cart.length===0){body.innerHTML='<p style="font-size:12px;color:#9a8a7a;text-align:center;margin-top:30px">Your bag is empty</p>';document.getElementById('cartCountHead').textContent='0 items';}else{cart.forEach(c=>{let p=products.find(x=>x.id===c.id);total+=p.price*c.qty;count+=c.qty;let div=document.createElement('div');div.className='item';div.innerHTML=`<img src="${p.img}"><div style="flex:1"><h4 style="font-size:11px">${p.name}</h4><p style="font-size:11px;color:#9a8a7a">Qty: ${c.qty} • ₦${p.price.toLocaleString()}</p><div style="display:flex;gap:6px;margin-top:4px"><button style="font-size:10px;padding:2px 6px;border:1px solid #e8ddd0;background:#fff" onclick="changeQty(${c.id},-1)">-</button><span style="font-size:11px">${c.qty}</span><button style="font-size:10px;padding:2px 6px;border:1px solid #e8ddd0;background:#fff" onclick="changeQty(${c.id},1)">+</button></div></div><i class="fa-solid fa-xmark" style="cursor:pointer;padding:8px" onclick="removeCart(${c.id})"></i>`;body.appendChild(div);});document.getElementById('cartCountHead').textContent=count+' items';}document.getElementById('cartTotal').textContent='₦'+total.toLocaleString();updateBadges();}
-function changeQty(id,delta){let ex=cart.find(x=>x.id===id);if(!ex)return;ex.qty+=delta;if(ex.qty<=0){removeCart(id);return}localStorage.setItem('efits_cart',JSON.stringify(cart));renderCart();}
-function removeCart(id){cart=cart.filter(x=>x.id!==id);localStorage.setItem('efits_cart',JSON.stringify(cart));renderCart();renderProducts();}
-function openCart(){renderCart();document.getElementById('cartPanel').classList.add('open');document.getElementById('overlay').classList.add('show');document.getElementById('overlay').onclick=closeAllPanels;lockScroll();}
-function closeCart(){document.getElementById('cartPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');unlockScroll();}
-function closeAllPanels(){document.getElementById('cartPanel').classList.remove('open');document.getElementById('favPanel').classList.remove('open');document.getElementById('walletPanel').classList.remove('open');document.getElementById('profilePanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');unlockScroll();}
-function toggleFav(id){if(favs.includes(id))favs=favs.filter(x=>x!==id);else favs.push(id);localStorage.setItem('efits_favs',JSON.stringify(favs));renderProducts();renderFavs();}
-function toggleFavFromModal(){toggleFav(currentProduct.id);let isFav=favs.includes(currentProduct.id);document.getElementById('modalHeart').className=(isFav?'fa-solid':'fa-regular')+' fa-heart';}
-function renderFavs(){let body=document.getElementById('favBody');body.innerHTML='';if(favs.length===0){body.innerHTML='<p style="text-align:center;margin-top:20px;font-size:12px">No favourites</p>';return}favs.forEach(id=>{let p=products.find(x=>x.id===id);let div=document.createElement('div');div.className='item';div.innerHTML=`<img src="${p.img}"><div style="flex:1"><h4 style="font-size:11px">${p.name}</h4><p>₦${p.price.toLocaleString()}</p></div><i class="fa-solid fa-xmark" onclick="toggleFav(${p.id})"></i>`;body.appendChild(div);});}
-function openFavs(){renderFavs();document.getElementById('favPanel').classList.add('open');document.getElementById('overlay').classList.add('show');document.getElementById('overlay').onclick=closeAllPanels;lockScroll();}
-function closeFavs(){document.getElementById('favPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');unlockScroll();}
-function openWallet(){updateWalletUI();document.getElementById('walletPanel').classList.add('open');document.getElementById('overlay').classList.add('show');document.getElementById('overlay').onclick=closeAllPanels;lockScroll();}
-function closeWallet(){document.getElementById('walletPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');unlockScroll();}
-function updateWalletUI(){document.getElementById('walletBal').textContent='₦'+walletBalance.toLocaleString()+'.00';document.getElementById('walletBalText').textContent=walletBalance.toLocaleString()+'.00';}
-function addFunds(){walletBalance+=5000;localStorage.setItem('efits_wallet',walletBalance);updateWalletUI();showBrandToast('₦5,000 added!');}
-function updateBadges(){let totalQty=cart.reduce((s,x)=>s+x.qty,0);let cb=document.getElementById('cartBadge');cb.style.display=totalQty?'flex':'none';cb.textContent=totalQty;let fb=document.getElementById('favBadge');fb.style.display=favs.length?'flex':'none';fb.textContent=favs.length;}
-function openCheckout(){
-  if(cart.length===0){showBrandToast('Bag empty');return}
-  let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);
-  document.getElementById('checkoutSummary').innerHTML=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty} = ₦${(p.price*c.qty).toLocaleString()}`}).join('<br>')+`<br><br><b>Total: ₦${total.toLocaleString()}</b>`;
-  document.getElementById('transferAmt').textContent='₦'+total.toLocaleString();
-  document.getElementById('registeredAddrText').textContent=currentUser && currentUser.address ? currentUser.address : 'No address saved - go to Profile to add';
-  document.getElementById('cartPanel').classList.remove('open');
-  document.getElementById('checkoutPanel').classList.add('open');
-  document.getElementById('overlay').classList.add('show');
-  document.getElementById('overlay').onclick=null;
-  updateWalletUI();
-}
-function closeCheckout(){document.getElementById('checkoutPanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');document.getElementById('overlay').onclick=closeAllPanels;unlockScroll();}
-function selectPay(type){
-  document.getElementById('optWallet').classList.remove('active');
-  document.getElementById('optTransfer').classList.remove('active');
-  document.getElementById('optCard').classList.remove('active');
-  document.getElementById('detailWallet').classList.remove('show');
-  document.getElementById('detailTransfer').classList.remove('show');
-  document.getElementById('detailCard').classList.remove('show');
-  document.getElementById('checkWallet').className='fa-regular fa-circle';
-  document.getElementById('checkTransfer').className='fa-regular fa-circle';
-  document.getElementById('checkCard').className='fa-regular fa-circle';
-  document.getElementById('opt'+type.charAt(0).toUpperCase()+type.slice(1)).classList.add('active');
-  document.getElementById('detail'+type.charAt(0).toUpperCase()+type.slice(1)).classList.add('show');
-  document.getElementById('check'+type.charAt(0).toUpperCase()+type.slice(1)).className='fa-solid fa-circle-check';
-}
-function copyAcct(){let num=document.getElementById('acctNum').textContent;navigator.clipboard.writeText(num);showBrandToast('Copied: '+num);}
-function payWallet(){let addr=getDeliveryAddress();if(!addr)return;let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);if(walletBalance<total){showBrandToast('Insufficient balance');return}walletBalance-=total;localStorage.setItem('efits_wallet',walletBalance);updateWalletUI();completeOrder('Wallet',addr);}
-function payTransfer(){let addr=getDeliveryAddress();if(!addr)return;completeOrder('Bank Transfer 9066069350',addr);}
-function payCard(){let addr=getDeliveryAddress();if(!addr)return;let num=document.getElementById('cardNumber').value.trim();if(num.replace(/\s/g,'').length<16){showBrandToast('Invalid card');return}completeOrder('Card '+num.slice(-4),addr);}
-function completeOrder(method,addr){let total=cart.reduce((s,c)=>{let p=products.find(x=>x.id===c.id);return s+p.price*c.qty},0);let text=cart.map(c=>{let p=products.find(x=>x.id===c.id);return `${p.name} x${c.qty}`}).join('%0A');closeCheckout();showBrandToast('Payment successful via '+method);let msg=`Hi E_FITS, I just paid via ${method}!%0AOrder:%0A${text}%0ATotal: ₦${total}%0ADelivery to: ${addr}`;setTimeout(()=>window.open('https://wa.me/2349066069350?text='+msg,'_blank'),800);cart=[];localStorage.setItem('efits_cart',JSON.stringify(cart));renderProducts();renderCart();}
-function formatCard(){let i=document.getElementById('cardNumber');let v=i.value.replace(/\D/g,'').slice(0,16);let f=v.replace(/(.{4})/g,'$1 ').trim();i.value=f;}
-</script>
-</body>
-</html>
+  document.getElementById('pColor').textContent='Selected Print: '+(colors[selectedPrint]||'Print '+(selectedPrint+1))+' ('+(selectedPrint+1)+' of '+total+')';
+  document
