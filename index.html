@@ -44,15 +44,14 @@ html.logged-in #shop{display:block !important}
 .btn-outline{background:#fff;color:var(--burgundy);border:1px solid var(--burgundy)}
 .shop{display:none;min-height:100vh;background:var(--cream)}
 .shop.active{display:block}
-/* ICONS - FIXED: SMALL + LAY FOR FLOOR */
 .top{position:sticky;top:0;z-index:20;background:var(--cream);border-bottom:1px solid var(--line);padding:16px 10px 6px 14px;display:flex;justify-content:space-between;align-items:flex-end;gap:4px}
-.top h2{letter-spacing:6px;font-size:22px;color:var(--burgundy);white-space:nowrap}
+.top h2{letter-spacing:6px;font-size:27px;color:var(--burgundy);white-space:nowrap}
 .icons{display:flex;gap:0;font-size:18px;color:var(--burgundy);flex-shrink:0;align-items:flex-end}
 .icon-wrap{position:relative;cursor:pointer;padding:2px 2px 0 2px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;min-width:30px}
 .icon-wrap i{font-size:10px}
 .icon-label{font-size:6px;letter-spacing:.2px;font-weight:500;color:#9a8a7a;text-transform:uppercase;white-space:nowrap;line-height:1}
 .badge{position:absolute;top:-4px;right:0;background:var(--burgundy);color:var(--cream);font-size:8px;min-width:13px;height:13px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-.welcome-bar{background:var(--beige);border-bottom:1px solid var(--line);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.welcome-bar{background:var(--beige);border-bottom:1px solid var(--line);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer}
 .welcome-bar h3{font-size:14px;color:var(--burgundy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .welcome-bar p{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .products{padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -117,7 +116,6 @@ html.logged-in #shop{display:block !important}
 .chat-panel.open{display:flex}
 .chat-head{background:var(--burgundy);color:var(--cream);padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
 .chat-avatar{width:38px;height:38px;border-radius:50%;background:#fff;color:var(--burgundy);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0}
-/* CHAT - FIXED: NO BACKGROUND SCROLL */
 .chat-body{flex:1;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:12px;background:#fdf8f3;display:flex;flex-direction:column;gap:8px}
 .chat-msg{max-width:82%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
 .chat-msg.ai{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
@@ -167,12 +165,11 @@ html.logged-in #shop{display:block !important}
 
 <div id="shop" class="shop">
   <div class="top"><h2 class="play">E_FITS</h2><div class="icons">
-    <div class="icon-wrap" onclick="openProfile()" title="My Profile"><i class="fa-regular fa-circle-user"></i><span class="icon-label">Profile</span></div>
     <div class="icon-wrap" onclick="openWallet()" title="My Wallet"><i class="fa-solid fa-wallet"></i><span class="icon-label">Wallet</span></div>
     <div class="icon-wrap" onclick="openFavs()" title="My Favourites"><i class="fa-regular fa-heart"></i><span id="favBadge" class="badge" style="display:none">0</span><span class="icon-label">Favourites</span></div>
     <div class="icon-wrap" onclick="openCart()" title="My Bag"><i class="fa-solid fa-bag-shopping"></i><span id="cartBadge" class="badge" style="display:none">0</span><span class="icon-label">Bag</span></div>
   </div></div>
-  <div class="welcome-bar"><div style="min-width:0"><h3 id="welcomeUser">Hi, Guest</h3><p id="welcomeUsername">@guest</p></div><div style="text-align:right;flex-shrink:0"><p style="font-size:10px;letter-spacing:1px">WELCOME BACK</p><p style="font-size:11px;color:var(--burgundy);font-weight:600">E_FITS Family 💜</p></div></div>
+  <div class="welcome-bar" onclick="openProfile()" title="Tap to open your Profile"><div style="min-width:0"><h3 id="welcomeUser">Hi, Guest</h3><p id="welcomeUsername">@guest</p></div><div style="text-align:right;flex-shrink:0;display:flex;align-items:center;gap:8px"><div><p style="font-size:10px;letter-spacing:1px">WELCOME BACK</p><p style="font-size:11px;color:var(--burgundy);font-weight:600">E_FITS Family 💜</p></div><span style="font-size:18px;color:var(--burgundy)">›</span></div></div>
   <div style="padding:20px 18px;text-align:center;border-bottom:1px solid var(--line)"><h3 class="play" style="font-size:20px;letter-spacing:4px;color:var(--burgundy)">ADIRE COLLECTION</h3></div>
   <div id="products" class="products"></div>
   <div class="footer">
