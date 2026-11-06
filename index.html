@@ -11,8 +11,7 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Inter',sans-serif;background:var(--burgundy);color:#222}
 body.locked{overflow:hidden;position:fixed;width:100%}
-
-/* ===== HEADER - LOGO NOT TOUCHED, ICONS ONLY SMALL + LOW ===== */
+/* HEADER - LOGO SAME, ICONS SMALL + LOW */
 .top{position:sticky;top:0;z-index:20;background:var(--cream);border-bottom:1px solid var(--line);padding:16px 10px 6px 14px;display:flex;justify-content:space-between;align-items:flex-end;gap:4px}
 .top h2{letter-spacing:6px;font-size:22px;color:var(--burgundy);white-space:nowrap;font-family:'Playfair Display',serif;line-height:1}
 .top-icons{display:flex;align-items:flex-end;gap:0}
@@ -20,12 +19,11 @@ body.locked{overflow:hidden;position:fixed;width:100%}
 .icon-wrap i{font-size:10px;color:var(--burgundy);line-height:1}
 .icon-label{font-size:6px;letter-spacing:.2px;font-weight:500;color:#9a8a7a;text-transform:uppercase;white-space:nowrap;line-height:1}
 .badge{position:absolute;top:-4px;right:2px;background:var(--burgundy);color:#fff;font-size:8px;min-width:13px;height:13px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 2px}
-
-/* ===== SHOP ===== */
+/* SHOP */
 .shop{background:var(--cream);padding:10px 8px 20px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .card{background:#fff;border:1px solid var(--line);overflow:hidden}
-.card img{width:100%;height:220px;object-fit:cover;display:block;background:#eee}
+.card img{width:100%;height:230px;object-fit:cover;display:block;background:#eee}
 .card-body{padding:8px}
 .card h3{font-size:11px;letter-spacing:.5px;line-height:1.3;min-height:28px}
 .pill{display:inline-block;background:#fdf8f3;border:1px solid var(--line);font-size:9px;padding:3px 7px;border-radius:20px;margin:5px 0}
@@ -33,16 +31,22 @@ body.locked{overflow:hidden;position:fixed;width:100%}
 .price{font-size:12px;color:#888}
 .add{background:var(--burgundy);color:#fff;border:none;padding:5px 10px;font-size:10px;cursor:pointer}
 .heart{position:absolute;top:8px;right:8px;background:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer}
+.heart.active{color:red}
 .img-wrap{position:relative}
-
-/* ===== FOOTER ===== */
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.modal-box{background:#fff;width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:20px;max-height:80vh;overflow-y:auto}
+.modal-box h3{font-size:16px;margin-bottom:10px}
+.modal-box p{font-size:13px;line-height:1.6;margin-bottom:8px}
+.close-btn{background:var(--burgundy);color:#fff;border:none;padding:10px 16px;border-radius:20px;width:100%;margin-top:10px;cursor:pointer}
+/* FOOTER */
 .footer{background:var(--burgundy);color:#fff;text-align:center;padding:28px 16px 90px}
 .footer h2{font-family:'Playfair Display',serif;letter-spacing:8px;font-size:24px}
 .footer p{font-size:12px;opacity:.8;margin:6px 0;line-height:1.5}
 .socials{display:flex;justify-content:center;gap:10px;margin:16px 0}
 .socials a{width:42px;height:42px;border:1px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;text-decoration:none}
-
-/* ===== CHAT - SCROLL FIX ===== */
+/* CHAT - SCROLL FIX */
 .chat-fab{position:fixed;bottom:20px;right:14px;z-index:90;background:#fff;color:#222;border-radius:30px;padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.25);cursor:pointer}
 .chat-box{position:fixed;bottom:0;left:0;right:0;z-index:100;background:#fff;height:78vh;display:none;flex-direction:column;border-radius:18px 18px 0 0;box-shadow:0 -5px 30px rgba(0,0,0,.2)}
 .chat-box.open{display:flex}
@@ -51,6 +55,8 @@ body.locked{overflow:hidden;position:fixed;width:100%}
 .msg{max-width:82%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.4}
 .msg.ai{background:#f1ece6;align-self:flex-start}
 .msg.me{background:var(--burgundy);color:#fff;align-self:flex-end}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.quick button{background:#fff;border:1px solid #ddd;padding:6px 10px;border-radius:20px;font-size:11px;cursor:pointer}
 .chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid #eee;background:#fff}
 .chat-input input{flex:1;padding:11px;border:1px solid #ddd;border-radius:20px;outline:none}
 .chat-input button{background:var(--burgundy);color:#fff;border:none;padding:0 16px;border-radius:20px}
@@ -61,16 +67,14 @@ body.locked{overflow:hidden;position:fixed;width:100%}
 <div class="top">
   <h2>E_FITS</h2>
   <div class="top-icons">
-    <div class="icon-wrap"><i class="fa-regular fa-user"></i><span class="icon-label">Profile</span></div>
-    <div class="icon-wrap"><i class="fa-solid fa-wallet"></i><span class="icon-label">Wallet</span></div>
-    <div class="icon-wrap"><i class="fa-regular fa-heart"></i><span class="badge" id="favCount">3</span><span class="icon-label">Favourites</span></div>
-    <div class="icon-wrap"><i class="fa-solid fa-bag-shopping"></i><span class="badge" id="bagCount">12</span><span class="icon-label">Bag</span></div>
+    <div class="icon-wrap" onclick="openProfile()"><i class="fa-regular fa-user"></i><span class="icon-label">Profile</span></div>
+    <div class="icon-wrap" onclick="openWallet()"><i class="fa-solid fa-wallet"></i><span class="icon-label">Wallet</span></div>
+    <div class="icon-wrap" onclick="openFavs()"><i class="fa-regular fa-heart"></i><span class="badge" id="favCount">0</span><span class="icon-label">Favourites</span></div>
+    <div class="icon-wrap" onclick="openBag()"><i class="fa-solid fa-bag-shopping"></i><span class="badge" id="bagCount">0</span><span class="icon-label">Bag</span></div>
   </div>
 </div>
 
-<div class="shop">
-  <div class="grid" id="grid"></div>
-</div>
+<div class="shop"><div class="grid" id="grid"></div></div>
 
 <div class="footer">
   <h2>E_FITS</h2>
@@ -90,58 +94,67 @@ body.locked{overflow:hidden;position:fixed;width:100%}
 <div class="chat-fab" id="chatFab"><i class="fa-solid fa-comments"></i> Talk to Support</div>
 
 <div class="chat-box" id="chatBox">
-  <div class="chat-head"><span><b>Hi, I'm E_FITS Assistant</b><br><small style="opacity:.7">Online • Replies instantly</small></span><span id="closeChat" style="cursor:pointer;font-size:20px">×</span></div>
+  <div class="chat-head"><span><b>Hi, I'm E_FITS Assistant</b><br><small style="opacity:.7">Online • Replies instantly</small></span><span id="closeChat" style="cursor:pointer;font-size:22px">×</span></div>
   <div class="chat-body" id="chatBody">
-    <div class="msg ai">Hi! Welcome to E_FITS 💛 How can I help you today? You can ask about sizes, delivery, or our Adire prints.</div>
+    <div class="msg ai">Hi! Welcome to E_FITS 💛 How can I help you today? Ask about sizes, delivery, or our Adire prints.</div>
+    <div class="quick">
+      <button onclick="quickAsk('What sizes do you have?')">Sizes</button>
+      <button onclick="quickAsk('How much is delivery?')">Delivery</button>
+      <button onclick="quickAsk('Show me Adire gowns')">Adire Gowns</button>
+    </div>
   </div>
   <div class="chat-input"><input id="chatInput" placeholder="Type a message..."><button id="sendBtn">Send</button></div>
 </div>
 
+<div class="modal" id="modal"><div class="modal-box"><h3 id="modalTitle">Title</h3><div id="modalText"></div><button class="close-btn" onclick="closeModal()">Close</button></div></div>
+
 <script>
+let bag=0, favs=0;
 const products=[
- {name:"OSUN ADIRE GOWN",price:"₦19,500",img:"https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80"},
- {name:"MINIMAL ADIRE TWO-PIECE",price:"₦20,500",img:"https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=80"},
- {name:"Lagos Adire Maxi Dress",price:"₦22,000",img:"https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&q=80"},
- {name:"Adire Wrap Dress",price:"₦18,500",img:"https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80"},
- {name:"Adire Co-ord Set",price:"₦21,500",img:"https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80"},
- {name:"Adire Evening Gown",price:"₦25,000",img:"https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=600&q=80"},
+ {name:"OSUN ADIRE GOWN",price:"₦19,500",img:"https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=600&q=80"},
+ {name:"MINIMAL ADIRE TWO-PIECE",price:"₦20,500",img:"https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=600&q=80"},
+ {name:"LAGOS ADIRE MAXI DRESS",price:"₦22,000",img:"https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&q=80"},
+ {name:"ADIRE WRAP DRESS",price:"₦18,500",img:"https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80"},
+ {name:"ADIRE CO-ORD SET",price:"₦21,500",img:"https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80"},
+ {name:"ADIRE EVENING GOWN",price:"₦25,000",img:"https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80"},
 ];
 const grid=document.getElementById('grid');
-grid.innerHTML=products.map(p=>`
-<div class="card"><div class="img-wrap"><img src="${p.img}" alt="${p.name}"><div class="heart">♡</div></div>
-<div class="card-body"><h3>${p.name}</h3><span class="pill">✓ Available in 3 Prints</span><div class="price-row"><span class="price">${p.price}</span><button class="add">ADD</button></div></div></div>`).join('');
+grid.innerHTML=products.map((p,i)=>`
+<div class="card"><div class="img-wrap"><img src="${p.img}" alt="${p.name}"><div class="heart" onclick="toggleFav(this)">♡</div></div>
+<div class="card-body"><h3>${p.name}</h3><span class="pill">✓ Available in 3 Prints</span><div class="price-row"><span class="price">${p.price}</span><button class="add" onclick="addBag()">ADD</button></div></div></div>`).join('');
 
-// CHAT - SCROLL LOCK FIX
+function addBag(){ bag++; document.getElementById('bagCount').innerText=bag; alert('Added to Bag! You now have '+bag+' items.'); }
+function toggleFav(el){ el.classList.toggle('active'); if(el.classList.contains('active')){ favs++; el.innerText='♥'; } else { favs--; el.innerText='♡'; } document.getElementById('favCount').innerText=favs; }
+
+function showModal(title,html){ document.getElementById('modalTitle').innerText=title; document.getElementById('modalText').innerHTML=html; document.getElementById('modal').classList.add('open'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeModal(); });
+
+function openProfile(){ showModal('My Profile','<p><b>Welcome to E_FITS</b><br>Name: E_FITS Customer<br>Location: Ijebu Ode, Ogun State<br><br>Your orders, measurements and settings go here.</p>'); }
+function openWallet(){ showModal('My Wallet','<p>Balance: <b>₦0</b><br><br>Top up to shop faster. Your refunds and credits go here.</p>'); }
+function openFavs(){ showModal('Favourites','<p>You have <b>'+favs+'</b> saved items.<br>Tap the heart ♥ on any dress to save it here.</p>'); }
+function openBag(){ showModal('My Bag','<p>You have <b>'+bag+'</b> items in your bag.<br><br>Tap ADD on any dress to add more. Checkout coming next.</p>'); }
+
+// CHAT
 const chatBox=document.getElementById('chatBox');
 const chatBody=document.getElementById('chatBody');
 const chatInput=document.getElementById('chatInput');
-document.getElementById('chatFab').onclick=()=>{
-  chatBox.classList.add('open');
-  document.body.style.overflow='hidden';
-  document.body.classList.add('locked');
-};
-function closeChat(){
-  chatBox.classList.remove('open');
-  document.body.style.overflow='';
-  document.body.classList.remove('locked');
-}
+document.getElementById('chatFab').onclick=()=>{ chatBox.classList.add('open'); document.body.style.overflow='hidden'; document.body.classList.add('locked'); };
+function closeChat(){ chatBox.classList.remove('open'); document.body.style.overflow=''; document.body.classList.remove('locked'); }
 document.getElementById('closeChat').onclick=closeChat;
-
-// STOP SCROLL LEAKING TO BACKGROUND - THE MAIN FIX
-chatBody.addEventListener('wheel',function(e){
-  e.stopPropagation();
-  const atTop=this.scrollTop===0;
-  const atBottom=this.scrollTop+this.clientHeight>=this.scrollHeight-2;
-  if((atTop && e.deltaY<0) || (atBottom && e.deltaY>0)){ e.preventDefault(); }
-},{passive:false});
+chatBody.addEventListener('wheel',function(e){ e.stopPropagation(); const atTop=this.scrollTop===0; const atBottom=this.scrollTop+this.clientHeight>=this.scrollHeight-2; if((atTop && e.deltaY<0)||(atBottom && e.deltaY>0)){ e.preventDefault(); } },{passive:false});
 chatBody.addEventListener('touchmove',function(e){ e.stopPropagation(); },{passive:true});
-
+function quickAsk(t){ chatInput.value=t; send(); }
 function send(){
   const v=chatInput.value.trim(); if(!v) return;
-  chatBody.innerHTML+=`<div class="msg me">${v}</div>`;
-  chatInput.value='';
-  chatBody.scrollTop=chatBody.scrollHeight;
-  setTimeout(()=>{ chatBody.innerHTML+=`<div class="msg ai">Thanks for asking! For sizes and delivery to Ijebu Ode / Lagos, we deliver in 2-4 days. Want me to help you pick a print?</div>`; chatBody.scrollTop=chatBody.scrollHeight; },600);
+  chatBody.innerHTML+=`<div class="msg me">${v}</div>`; chatInput.value=''; chatBody.scrollTop=chatBody.scrollHeight;
+  setTimeout(()=>{
+    let reply='Thanks for asking! For sizes we have S - XL, delivery to Ijebu Ode / Lagos is 2-4 days. Want me to help you pick a print?';
+    if(v.toLowerCase().includes('size')) reply='We have S, M, L, XL. The Adire gowns are free-flowing, so if you are between sizes, pick the smaller one. What is your size?';
+    if(v.toLowerCase().includes('deliver')) reply='Delivery: Ijebu Ode ₦1,500 (1-2 days), Lagos ₦2,500 (2-4 days), Nationwide ₦3,500. Free delivery on orders above ₦50,000.';
+    if(v.toLowerCase().includes('adire')||v.toLowerCase().includes('gown')) reply='Our best sellers are OSUN ADIRE GOWN ₦19,500 and MINIMAL ADIRE TWO-PIECE ₦20,500. Both are available in 3 prints. Which one do you like?';
+    chatBody.innerHTML+=`<div class="msg ai">${reply}</div>`; chatBody.scrollTop=chatBody.scrollHeight;
+  },600);
 }
 document.getElementById('sendBtn').onclick=send;
 chatInput.addEventListener('keydown',e=>{ if(e.key==='Enter') send(); });
