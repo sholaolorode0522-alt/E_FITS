@@ -2,162 +2,294 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>E_FITS</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>try{if(localStorage.getItem('efits_current')){document.documentElement.className+=' logged-in';}}catch(e){}</script>
 <style>
-:root{--burgundy:#3a1414;--cream:#fdf8f3;--beige:#f5efe6;--line:#e8ddd0;--muted:#9a8a7a}
+:root{--burgundy:#3a1414;--cream:#fdf8f3;--beige:#f5efe6;--muted:#9a8a7a;--line:#e8ddd0;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'Inter',sans-serif;background:var(--burgundy);color:#222}
+body{font-family:'Inter',sans-serif;background:var(--burgundy);min-height:100vh;overflow-x:hidden}
 body.locked{overflow:hidden;position:fixed;width:100%}
-/* HEADER - LOGO SAME, ICONS SMALL + LOW */
+.play{font-family:'Playfair Display',serif}
+html.logged-in #auth{display:none !important}
+html.logged-in #shop{display:block !important}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--burgundy)}
+.auth-card{background:var(--cream);width:100%;max-width:420px;padding:36px 28px 28px}
+.logo{text-align:center;margin-bottom:22px}
+.logo h1{font-size:48px;letter-spacing:8px;color:var(--burgundy);font-weight:700}
+.logo p{letter-spacing:3px;font-size:12px;color:var(--muted);margin-top:6px;text-transform:uppercase}
+.tabs{display:flex;background:var(--beige);margin-bottom:24px;border:1px solid var(--line)}
+.tabs button{flex:1;padding:12px;font-size:13px;letter-spacing:2px;border:none;cursor:pointer;background:transparent;color:var(--burgundy)}
+.tabs button.active{background:var(--burgundy);color:var(--cream)}
+.field{position:relative;margin-bottom:6px}
+.field input,.field textarea{width:100%;padding:14px 44px 14px 14px;border:1px solid var(--line);background:#fff;font-size:14px;outline:none;font-family:'Inter',sans-serif}
+.field textarea{padding:14px;min-height:64px;resize:vertical}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--muted);width:28px;height:28px;display:flex;align-items:center;justify-content:center}
+.error{font-size:11px;color:#b91c1c;margin:4px 0 10px;min-height:12px;font-weight:500}
+.success{font-size:11px;color:#15803d;margin:4px 0 10px;min-height:12px;font-weight:600}
+.strength-wrap{margin:6px 0 12px}
+.strength-bar{display:flex;gap:4px;height:4px}
+.strength-bar span{flex:1;background:var(--line);border-radius:2px}
+.strength-bar span.active-weak{background:#b91c1c}
+.strength-bar span.active-medium{background:#d97706}
+.strength-bar span.active-strong{background:#15803d}
+.strength-text{font-size:10px;margin-top:4px;font-weight:600}
+.strength-text.weak{color:#b91c1c}.strength-text.medium{color:#d97706}.strength-text.strong{color:#15803d}
+.rules{font-size:10px;color:var(--muted);margin:0 0 12px;line-height:1.6}
+.rules span{display:block}.rules span.ok{color:#15803d}
+.btn{width:100%;padding:14px;background:var(--burgundy);color:var(--cream);border:none;letter-spacing:2px;font-size:13px;cursor:pointer;font-weight:600}
+.btn-small{padding:11px 12px;font-size:11px;letter-spacing:1px;white-space:nowrap;width:auto}
+.btn-outline{background:#fff;color:var(--burgundy);border:1px solid var(--burgundy)}
+.shop{display:none;min-height:100vh;background:var(--cream)}
+.shop.active{display:block}
+/* ICONS FIXED HERE - SMALL + LAY FOR FLOOR, LOGO NOT TOUCHED */
 .top{position:sticky;top:0;z-index:20;background:var(--cream);border-bottom:1px solid var(--line);padding:16px 10px 6px 14px;display:flex;justify-content:space-between;align-items:flex-end;gap:4px}
-.top h2{letter-spacing:6px;font-size:22px;color:var(--burgundy);white-space:nowrap;font-family:'Playfair Display',serif;line-height:1}
-.top-icons{display:flex;align-items:flex-end;gap:0}
-.icon-wrap{position:relative;cursor:pointer;padding:2px 2px 0 2px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;min-width:32px}
-.icon-wrap i{font-size:10px;color:var(--burgundy);line-height:1}
+.top h2{letter-spacing:6px;font-size:22px;color:var(--burgundy);white-space:nowrap}
+.icons{display:flex;gap:0;font-size:18px;color:var(--burgundy);flex-shrink:0;align-items:flex-end}
+.icon-wrap{position:relative;cursor:pointer;padding:2px 2px 0 2px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;min-width:30px}
+.icon-wrap i{font-size:10px}
 .icon-label{font-size:6px;letter-spacing:.2px;font-weight:500;color:#9a8a7a;text-transform:uppercase;white-space:nowrap;line-height:1}
-.badge{position:absolute;top:-4px;right:2px;background:var(--burgundy);color:#fff;font-size:8px;min-width:13px;height:13px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 2px}
-/* SHOP */
-.shop{background:var(--cream);padding:10px 8px 20px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.card{background:#fff;border:1px solid var(--line);overflow:hidden}
-.card img{width:100%;height:230px;object-fit:cover;display:block;background:#eee}
-.card-body{padding:8px}
-.card h3{font-size:11px;letter-spacing:.5px;line-height:1.3;min-height:28px}
-.pill{display:inline-block;background:#fdf8f3;border:1px solid var(--line);font-size:9px;padding:3px 7px;border-radius:20px;margin:5px 0}
-.price-row{display:flex;justify-content:space-between;align-items:center}
-.price{font-size:12px;color:#888}
-.add{background:var(--burgundy);color:#fff;border:none;padding:5px 10px;font-size:10px;cursor:pointer}
-.heart{position:absolute;top:8px;right:8px;background:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer}
-.heart.active{color:red}
-.img-wrap{position:relative}
-/* MODAL */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
-.modal.open{display:flex}
-.modal-box{background:#fff;width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:20px;max-height:80vh;overflow-y:auto}
-.modal-box h3{font-size:16px;margin-bottom:10px}
-.modal-box p{font-size:13px;line-height:1.6;margin-bottom:8px}
-.close-btn{background:var(--burgundy);color:#fff;border:none;padding:10px 16px;border-radius:20px;width:100%;margin-top:10px;cursor:pointer}
-/* FOOTER */
-.footer{background:var(--burgundy);color:#fff;text-align:center;padding:28px 16px 90px}
-.footer h2{font-family:'Playfair Display',serif;letter-spacing:8px;font-size:24px}
-.footer p{font-size:12px;opacity:.8;margin:6px 0;line-height:1.5}
-.socials{display:flex;justify-content:center;gap:10px;margin:16px 0}
-.socials a{width:42px;height:42px;border:1px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;text-decoration:none}
-/* CHAT - SCROLL FIX */
-.chat-fab{position:fixed;bottom:20px;right:14px;z-index:90;background:#fff;color:#222;border-radius:30px;padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.25);cursor:pointer}
-.chat-box{position:fixed;bottom:0;left:0;right:0;z-index:100;background:#fff;height:78vh;display:none;flex-direction:column;border-radius:18px 18px 0 0;box-shadow:0 -5px 30px rgba(0,0,0,.2)}
-.chat-box.open{display:flex}
-.chat-head{background:var(--burgundy);color:#fff;padding:14px;display:flex;justify-content:space-between;align-items:center;border-radius:18px 18px 0 0}
-.chat-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:14px;display:flex;flex-direction:column;gap:10px;touch-action:pan-y}
-.msg{max-width:82%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.4}
-.msg.ai{background:#f1ece6;align-self:flex-start}
-.msg.me{background:var(--burgundy);color:#fff;align-self:flex-end}
-.quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
-.quick button{background:#fff;border:1px solid #ddd;padding:6px 10px;border-radius:20px;font-size:11px;cursor:pointer}
-.chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid #eee;background:#fff}
-.chat-input input{flex:1;padding:11px;border:1px solid #ddd;border-radius:20px;outline:none}
-.chat-input button{background:var(--burgundy);color:#fff;border:none;padding:0 16px;border-radius:20px}
+.badge{position:absolute;top:-4px;right:0;background:var(--burgundy);color:var(--cream);font-size:8px;min-width:13px;height:13px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.welcome-bar{background:var(--beige);border-bottom:1px solid var(--line);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.welcome-bar h3{font-size:14px;color:var(--burgundy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.welcome-bar p{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.products{padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:#fff;border:1px solid var(--line);overflow:hidden;cursor:pointer;position:relative}
+.card img{width:100%;aspect-ratio:3/4;object-fit:cover}
+.card .fav-btn{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.9);border:none;display:flex;align-items:center;justify-content:center;color:var(--burgundy);cursor:pointer;z-index:2}
+.card .info{padding:8px 10px}
+.card .info h4{font-size:11px;letter-spacing:1px;color:var(--burgundy)}
+.card .info .row{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.card .info p{font-size:12px;color:var(--muted)}
+.card .add{font-size:10px;background:var(--burgundy);color:var(--cream);border:none;padding:4px 8px;cursor:pointer}
+.print-mini{display:inline-block;background:var(--beige);border:1px solid var(--line);color:var(--burgundy);font-size:9px;letter-spacing:.3px;padding:3px 7px;border-radius:20px;margin-top:4px;font-weight:600}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:79;display:none}
+.overlay.show{display:block}
+.panel{position:fixed;top:0;right:0;width:360px;max-width:92vw;height:100dvh;background:#fff;z-index:80;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column}
+.panel.open{transform:translateX(0)}
+.panel-head{padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:var(--cream);flex-shrink:0}
+.panel-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px;background:var(--beige);overscroll-behavior:contain}
+.panel-foot{padding:14px;padding-bottom:34px;border-top:1px solid var(--line);background:#fff;flex-shrink:0;position:sticky;bottom:0}
+.item{display:flex;gap:10px;background:#fff;border:1px solid var(--line);padding:8px;margin-bottom:8px;align-items:center}
+.item img{width:56px;height:70px;object-fit:cover;flex-shrink:0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:12px;overscroll-behavior:contain}
+.modal.show{display:flex}
+.modal-box{background:var(--cream);width:100%;max-width:380px;max-height:92dvh;display:flex;flex-direction:column;overflow:hidden;position:relative;border-radius:8px}
+#forgotModal .modal-box{height:auto;display:block;padding:24px;text-align:center}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--cream);border:1px solid var(--line);padding:20px;width:90%;max-width:340px;z-index:200;display:none;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center}
+.toast.show{display:block}
+.pay-option{border:2px solid var(--line);background:#fff;padding:14px;margin-bottom:10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.pay-option.active{border-color:var(--burgundy);background:var(--beige)}
+.pay-details{border:1px dashed var(--line);padding:12px;margin-top:8px;background:#fff;display:none}
+.pay-details.show{display:block}
+.copy-btn{font-size:10px;padding:5px 10px;background:var(--burgundy);color:var(--cream);border:none;cursor:pointer;margin-left:8px}
+.card-input{width:100%;padding:12px;border:1px solid var(--line);margin:6px 0;font-size:13px}
+.profile-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px;gap:10px}
+.profile-row span:first-child{color:var(--muted);flex-shrink:0}
+.profile-row span:last-child{font-weight:600;text-align:right;word-break:break-word}
+.addr-option{border:1px solid var(--line);background:#fff;padding:12px;margin-bottom:8px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.addr-option.active{border-color:var(--burgundy);background:var(--beige)}
+.close-btn{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.95);border:none;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--burgundy);cursor:pointer;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.gallery-wrap{display:flex;flex-direction:row;height:380px;flex:0 0 380px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:#f0ece6;scrollbar-width:none;position:relative}
+.gallery-wrap::-webkit-scrollbar{display:none}
+.gallery-wrap.single{overflow:hidden}
+.gallery-item{min-width:100%;width:100%;height:100%;scroll-snap-align:start;position:relative;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f0ece6}
+.gallery-item img{width:100%;height:100%;object-fit:contain;object-position:center top}
+.gallery-label{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;padding:6px 10px;border-radius:20px}
+.gallery-counter{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:5px 9px;border-radius:20px}
+.swipe-hint{text-align:center;font-size:10px;color:var(--burgundy);letter-spacing:.5px;padding:7px 8px;background:var(--beige);font-weight:600;flex-shrink:0}
+.product-info{flex:0 0 auto;display:flex;flex-direction:column;padding:10px 14px 12px}
+.print-dot{width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;flex-shrink:0}
+.print-dot.active{border-color:var(--burgundy);transform:scale(1.15)}
+.mini-arrow{position:absolute;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.85);border:none;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--burgundy);cursor:pointer;z-index:6;box-shadow:0 1px 6px rgba(0,0,0,.15);opacity:.9}
+.footer{background:var(--burgundy);color:var(--cream);padding:28px 20px 110px;text-align:center}
+.footer h3{letter-spacing:6px;font-size:22px;margin-bottom:6px}
+.footer p{font-size:11px;opacity:.8;line-height:1.6}
+.social-row{display:flex;justify-content:center;gap:12px;margin:16px 0}
+.social-btn{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px;cursor:pointer;text-decoration:none}
+.support-float{position:fixed;bottom:18px;right:16px;z-index:60;display:flex;align-items:center;gap:8px;background:var(--burgundy);color:#fff;border:none;padding:12px 16px;border-radius:50px;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;font-size:12px;letter-spacing:.3px}
+.support-float i{font-size:18px}
+.support-dot{position:absolute;top:-4px;right:-2px;width:14px;height:14px;background:#ff3b30;border:2px solid #fff;border-radius:50%;display:none}
+.support-dot.show{display:block}
+.chat-panel{position:fixed;bottom:16px;right:16px;width:360px;max-width:calc(100vw - 32px);height:540px;max-height:calc(100dvh - 32px);background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.35);z-index:120;display:none;flex-direction:column;overflow:hidden}
+.chat-panel.open{display:flex}
+.chat-head{background:var(--burgundy);color:var(--cream);padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.chat-avatar{width:38px;height:38px;border-radius:50%;background:#fff;color:var(--burgundy);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0}
+/* CHAT FIXED HERE - NO BACKGROUND SCROLL */
+.chat-body{flex:1;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:12px;background:#fdf8f3;display:flex;flex-direction:column;gap:8px}
+.chat-msg{max-width:82%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.chat-msg.ai{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-msg.user{background:var(--burgundy);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.quick-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.quick-btn{font-size:11px;padding:7px 10px;border-radius:20px;border:1px solid var(--burgundy);background:#fff;color:var(--burgundy);cursor:pointer;font-weight:600}
+.quick-btn:hover{background:var(--burgundy);color:#fff}
+.chat-input-row{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:#fff;flex-shrink:0;padding-bottom:16px}
+.chat-input{flex:1;padding:11px 12px;border:1px solid var(--line);border-radius:20px;outline:none;font-size:13px;font-family:'Inter',sans-serif}
+.chat-send{width:40px;height:40px;border-radius:50%;background:var(--burgundy);color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.typing{display:flex;gap:4px;padding:10px 12px;background:#fff;border:1px solid var(--line);border-radius:14px;align-self:flex-start;width:52px}
+.typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:blink 1s infinite}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+.chat-greeting{position:fixed;bottom:76px;right:16px;width:280px;max-width:calc(100vw - 32px);background:#fff;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.25);z-index:115;display:none;padding:12px;cursor:pointer;animation:slideUp .4s ease}
+.chat-greeting.show{display:block}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.chat-greeting:after{content:'';position:absolute;bottom:-6px;right:28px;width:12px;height:12px;background:#fff;transform:rotate(45deg)}
 </style>
 </head>
 <body>
 
-<div class="top">
-  <h2>E_FITS</h2>
-  <div class="top-icons">
-    <div class="icon-wrap" onclick="openProfile()"><i class="fa-regular fa-user"></i><span class="icon-label">Profile</span></div>
-    <div class="icon-wrap" onclick="openWallet()"><i class="fa-solid fa-wallet"></i><span class="icon-label">Wallet</span></div>
-    <div class="icon-wrap" onclick="openFavs()"><i class="fa-regular fa-heart"></i><span class="badge" id="favCount">0</span><span class="icon-label">Favourites</span></div>
-    <div class="icon-wrap" onclick="openBag()"><i class="fa-solid fa-bag-shopping"></i><span class="badge" id="bagCount">0</span><span class="icon-label">Bag</span></div>
+<div id="auth" class="auth-wrap">
+  <div class="auth-card">
+    <div class="logo"><h1 class="play">E_FITS</h1><p>Bold.Intentional.Minimal</p></div>
+    <div class="tabs"><button id="tLogin" class="active" onclick="switchTab('login')">LOGIN</button><button id="tSignup" onclick="switchTab('signup')">SIGN UP</button></div>
+    <div id="signupExtra" style="display:none">
+      <div class="field"><input id="fullName" type="text" placeholder="Full Name - e.g. Adaeze Okafor"></div><div id="fullNameError" class="error"></div>
+      <div class="field"><input id="username" type="text" placeholder="Username - e.g. ada_fits"></div><div id="usernameError" class="error"></div>
+      <div class="field"><input id="phone" type="tel" placeholder="Phone Number - e.g. 09066069350"></div>
+      <div style="display:flex;gap:8px;margin-bottom:6px"><input id="otpInput" placeholder="Enter OTP Code" style="flex:1;padding:12px;border:1px solid var(--line);font-size:13px"><button class="btn btn-small" onclick="sendOTP()">SEND CODE</button></div>
+      <div style="margin-bottom:6px"><button class="btn" style="background:#15803d;padding:11px;font-size:11px" onclick="verifyOTP()">VERIFY PHONE ✓</button></div>
+      <div id="phoneError" class="error"></div><div id="phoneSuccess" class="success"></div>
+      <div class="field"><textarea id="address" placeholder="Home / Delivery Address - e.g. 12 Allen Avenue, Ikeja, Lagos"></textarea></div><div id="addressError" class="error"></div>
+    </div>
+    <div class="field"><input id="email" type="email" placeholder="Email Address" oninput="validateEmail()"></div><div id="emailError" class="error"></div>
+    <div class="field"><input id="password" type="password" placeholder="Password" oninput="checkStrength()"><span class="eye" onclick="toggleEye('password','eye1')"><i id="eye1" class="fa-regular fa-eye"></i></span></div>
+    <div id="strengthWrap" class="strength-wrap" style="display:none"><div class="strength-bar"><span id="bar1"></span><span id="bar2"></span><span id="bar3"></span><span id="bar4"></span><span id="bar5"></span></div><div id="strengthText" class="strength-text"></div></div>
+    <div id="rules" class="rules" style="display:none"><span id="ruleLen">✗ At least 8 characters</span><span id="ruleUpper">✗ One uppercase</span><span id="ruleLower">✗ One lowercase</span><span id="ruleNum">✗ One number</span><span id="ruleSpecial">✗ One special (!@#...)</span></div>
+    <div id="passError" class="error"></div>
+    <div id="signupConfirm" style="display:none"><div class="field"><input id="confirm" type="password" placeholder="Confirm Password" oninput="validateConfirm()"><span class="eye" onclick="toggleEye('confirm','eye2')"><i id="eye2" class="fa-regular fa-eye"></i></span></div><div id="confirmError" class="error"></div></div>
+    <div style="text-align:right;margin:6px 0 16px"><a onclick="openForgot()" style="font-size:12px;color:var(--burgundy);text-decoration:underline;cursor:pointer">Forgot password?</a></div>
+    <button class="btn" id="mainBtn" onclick="handleAuth()">ENTER BOUTIQUE</button>
+    <p id="authHint" style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">New here? Tap SIGN UP to create account.</p>
   </div>
 </div>
 
-<div class="shop"><div class="grid" id="grid"></div></div>
-
-<div class="footer">
-  <h2>E_FITS</h2>
-  <p>Bold. Intentional. Minimal.<br>Hand-dyed Adire made with love in Lagos.</p>
-  <p style="letter-spacing:3px;margin-top:18px">FOLLOW US</p>
-  <div class="socials">
-    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-    <a href="#"><i class="fa-brands fa-youtube"></i></a>
-  </div>
-  <p style="letter-spacing:3px">OUR STUDIO</p>
-  <p>📍 E_FITS Studio<br>Ijebu Ode, Ogun State<br>Monday - Saturday</p>
-  <p>For help, please use Talk to Support below.</p>
-</div>
-
-<div class="chat-fab" id="chatFab"><i class="fa-solid fa-comments"></i> Talk to Support</div>
-
-<div class="chat-box" id="chatBox">
-  <div class="chat-head"><span><b>Hi, I'm E_FITS Assistant</b><br><small style="opacity:.7">Online • Replies instantly</small></span><span id="closeChat" style="cursor:pointer;font-size:22px">×</span></div>
-  <div class="chat-body" id="chatBody">
-    <div class="msg ai">Hi! Welcome to E_FITS 💛 How can I help you today? Ask about sizes, delivery, or our Adire prints.</div>
-    <div class="quick">
-      <button onclick="quickAsk('What sizes do you have?')">Sizes</button>
-      <button onclick="quickAsk('How much is delivery?')">Delivery</button>
-      <button onclick="quickAsk('Show me Adire gowns')">Adire Gowns</button>
+<div id="shop" class="shop">
+  <div class="top"><h2 class="play">E_FITS</h2><div class="icons">
+    <div class="icon-wrap" onclick="openProfile()" title="My Profile"><i class="fa-regular fa-circle-user"></i><span class="icon-label">Profile</span></div>
+    <div class="icon-wrap" onclick="openWallet()" title="My Wallet"><i class="fa-solid fa-wallet"></i><span class="icon-label">Wallet</span></div>
+    <div class="icon-wrap" onclick="openFavs()" title="My Favourites"><i class="fa-regular fa-heart"></i><span id="favBadge" class="badge" style="display:none">0</span><span class="icon-label">Favourites</span></div>
+    <div class="icon-wrap" onclick="openCart()" title="My Bag"><i class="fa-solid fa-bag-shopping"></i><span id="cartBadge" class="badge" style="display:none">0</span><span class="icon-label">Bag</span></div>
+  </div></div>
+  <div class="welcome-bar"><div style="min-width:0"><h3 id="welcomeUser">Hi, Guest</h3><p id="welcomeUsername">@guest</p></div><div style="text-align:right;flex-shrink:0"><p style="font-size:10px;letter-spacing:1px">WELCOME BACK</p><p style="font-size:11px;color:var(--burgundy);font-weight:600">E_FITS Family 💜</p></div></div>
+  <div style="padding:20px 18px;text-align:center;border-bottom:1px solid var(--line)"><h3 class="play" style="font-size:20px;letter-spacing:4px;color:var(--burgundy)">ADIRE COLLECTION</h3></div>
+  <div id="products" class="products"></div>
+  <div class="footer">
+    <h3 class="play">E_FITS</h3>
+    <p>Bold. Intentional. Minimal.<br>Hand-dyed Adire made with love in Lagos.</p>
+    <p style="letter-spacing:2px;margin-top:16px;font-weight:600">FOLLOW US</p>
+    <div class="social-row">
+      <a class="social-btn" href="https://instagram.com/e_fits" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+      <a class="social-btn" href="https://tiktok.com/@e_fits" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+      <a class="social-btn" href="https://facebook.com/efits" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+      <a class="social-btn" href="https://youtube.com/@e_fits" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.2);padding-top:18px;margin-top:10px">
+      <p style="letter-spacing:2px;font-weight:600">OUR STUDIO</p>
+      <p style="margin-top:8px;line-height:1.7"><i class="fa-solid fa-location-dot"></i> E_FITS Studio<br>Ijebu Ode, Ogun State<br>Monday - Saturday</p>
+      <p>For help, please use Talk to Support below.</p>
     </div>
   </div>
-  <div class="chat-input"><input id="chatInput" placeholder="Type a message..."><button id="sendBtn">Send</button></div>
 </div>
 
-<div class="modal" id="modal"><div class="modal-box"><h3 id="modalTitle">Title</h3><div id="modalText"></div><button class="close-btn" onclick="closeModal()">Close</button></div></div>
+<div class="overlay" id="overlay" onclick="closeAllPanels()"></div>
+<div class="panel" id="cartPanel"><div class="panel-head"><b>My Bag</b><span onclick="closeAllPanels()" style="cursor:pointer;font-size:20px">×</span></div><div class="panel-body" id="cartBody"></div><div class="panel-foot"><button class="btn" onclick="alert('Checkout coming next')">CHECKOUT</button></div></div>
+<div class="panel" id="favPanel"><div class="panel-head"><b>My Favourites</b><span onclick="closeAllPanels()" style="cursor:pointer;font-size:20px">×</span></div><div class="panel-body" id="favBody"></div></div>
+<div class="panel" id="walletPanel"><div class="panel-head"><b>My Wallet</b><span onclick="closeAllPanels()" style="cursor:pointer;font-size:20px">×</span></div><div class="panel-body"><p>Balance: <b>₦0</b></p><p style="font-size:12px;color:var(--muted)">Top up to shop faster.</p></div></div>
+<div class="panel" id="profilePanel"><div class="panel-head"><b>My Profile</b><span onclick="closeAllPanels()" style="cursor:pointer;font-size:20px">×</span></div><div class="panel-body" id="profileBody"></div></div>
+
+<button class="support-float" onclick="toggleChat()"><i class="fa-solid fa-comments"></i> Talk to Support <span class="support-dot" id="supportDot"></span></button>
+
+<div class="chat-greeting" id="chatGreeting" onclick="toggleChat()"><b>Hi, I'm E_FITS Assistant 💛</b><p style="font-size:12px;color:var(--muted);margin-top:4px">Ask me about sizes, delivery or Adire prints.</p></div>
+
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-head"><div class="chat-avatar">E</div><div style="flex:1"><b>E_FITS Assistant</b><br><small style="opacity:.8">Online • Replies instantly</small></div><span onclick="toggleChat()" style="cursor:pointer;font-size:20px">×</span></div>
+  <div class="chat-body" id="chatBody">
+    <div class="chat-msg ai">Hi! Welcome to E_FITS 💛 How can I help you today? You can ask about sizes, delivery, or our Adire prints.</div>
+    <div class="quick-row"><button class="quick-btn" onclick="quickAsk('What sizes do you have?')">Sizes</button><button class="quick-btn" onclick="quickAsk('How much is delivery?')">Delivery</button><button class="quick-btn" onclick="quickAsk('Show me Adire gowns')">Adire Gowns</button></div>
+  </div>
+  <div class="chat-input-row"><input class="chat-input" id="chatInput" placeholder="Type a message..."><button class="chat-send" onclick="sendChat()"><i class="fa-solid fa-paper-plane"></i></button></div>
+</div>
+
+<div class="modal" id="productModal"><div class="modal-box"><button class="close-btn" onclick="closeProduct()">×</button><div class="gallery-wrap" id="galleryWrap"></div><div class="swipe-hint" id="swipeHint">SWIPE TO SEE PRINTS →</div><div class="product-info" id="productInfo"></div></div></div>
+<div class="modal" id="forgotModal"><div class="modal-box"><h3>Forgot Password</h3><p style="font-size:13px;margin:10px 0">Enter your email to reset.</p><input id="forgotEmail" class="card-input" placeholder="Email"><button class="btn" onclick="closeForgot()">SEND RESET LINK</button><button class="btn btn-outline" style="margin-top:8px" onclick="closeForgot()">CLOSE</button></div></div>
+<div class="toast" id="toast"><b id="toastTitle">Added</b><p id="toastMsg" style="font-size:12px;margin-top:6px"></p><button class="btn" style="margin-top:12px" onclick="hideToast()">OK</button></div>
 
 <script>
-let bag=0, favs=0;
-const products=[
- {name:"OSUN ADIRE GOWN",price:"₦19,500",img:"https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=600&q=80"},
- {name:"MINIMAL ADIRE TWO-PIECE",price:"₦20,500",img:"https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=600&q=80"},
- {name:"LAGOS ADIRE MAXI DRESS",price:"₦22,000",img:"https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&q=80"},
- {name:"ADIRE WRAP DRESS",price:"₦18,500",img:"https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80"},
- {name:"ADIRE CO-ORD SET",price:"₦21,500",img:"https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80"},
- {name:"ADIRE EVENING GOWN",price:"₦25,000",img:"https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80"},
+let mode='login', cart=[], favs=[], currentUser=null;
+const PRODUCTS=[
+ {id:1,name:"OSUN ADIRE GOWN",price:19500,img:"https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=600&q=80"},
+ {id:2,name:"MINIMAL ADIRE TWO-PIECE",price:20500,img:"https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=600&q=80"},
+ {id:3,name:"LAGOS ADIRE MAXI",price:22000,img:"https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&q=80"},
+ {id:4,name:"ADIRE WRAP DRESS",price:18500,img:"https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80"},
+ {id:5,name:"ADIRE CO-ORD SET",price:21500,img:"https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80"},
+ {id:6,name:"ADIRE EVENING GOWN",price:25000,img:"https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80"},
 ];
-const grid=document.getElementById('grid');
-grid.innerHTML=products.map((p,i)=>`
-<div class="card"><div class="img-wrap"><img src="${p.img}" alt="${p.name}"><div class="heart" onclick="toggleFav(this)">♡</div></div>
-<div class="card-body"><h3>${p.name}</h3><span class="pill">✓ Available in 3 Prints</span><div class="price-row"><span class="price">${p.price}</span><button class="add" onclick="addBag()">ADD</button></div></div></div>`).join('');
+function renderProducts(){
+  document.getElementById('products').innerHTML=PRODUCTS.map(p=>`
+  <div class="card" onclick="openProduct(${p.id})"><img src="${p.img}"><button class="fav-btn" onclick="event.stopPropagation();toggleFav(${p.id},this)">♡</button>
+  <div class="info"><h4>${p.name}</h4><span class="print-mini">✓ Available in 3 Prints</span><div class="row"><p>₦${p.price.toLocaleString()}</p><button class="add" onclick="event.stopPropagation();addToCart(${p.id})">ADD</button></div></div></div>`).join('');
+}
+renderProducts();
+function switchTab(t){ mode=t; document.getElementById('tLogin').classList.toggle('active',t==='login'); document.getElementById('tSignup').classList.toggle('active',t==='signup'); document.getElementById('signupExtra').style.display=t==='signup'?'block':'none'; document.getElementById('signupConfirm').style.display=t==='signup'?'block':'none'; document.getElementById('mainBtn').innerText=t==='signup'?'CREATE ACCOUNT':'ENTER BOUTIQUE'; }
+function toggleEye(id,eye){ var i=document.getElementById(id); i.type=i.type==='password'?'text':'password'; }
+function validateEmail(){}
+function checkStrength(){}
+function validateConfirm(){}
+function sendOTP(){ document.getElementById('phoneSuccess').innerText='OTP sent! Use 1234 to verify.'; }
+function verifyOTP(){ document.getElementById('phoneSuccess').innerText='Phone verified ✓'; }
+function handleAuth(){ document.getElementById('auth').style.display='none'; document.getElementById('shop').style.display='block'; document.getElementById('shop').classList.add('active'); try{localStorage.setItem('efits_current','1');}catch(e){} }
+function openForgot(){ document.getElementById('forgotModal').classList.add('show'); }
+function closeForgot(){ document.getElementById('forgotModal').classList.remove('show'); }
+function openProduct(id){ var p=PRODUCTS.find(x=>x.id===id); document.getElementById('galleryWrap').innerHTML=`<div class="gallery-item"><img src="${p.img}"></div>`; document.getElementById('productInfo').innerHTML=`<h3 style="font-size:16px">${p.name}</h3><p style="margin:6px 0">₦${p.price.toLocaleString()} • Available in 3 Prints</p><button class="btn" onclick="addToCart(${p.id});closeProduct()">ADD TO BAG</button>`; document.getElementById('productModal').classList.add('show'); }
+function closeProduct(){ document.getElementById('productModal').classList.remove('show'); }
+function addToCart(id){ var p=PRODUCTS.find(x=>x.id===id); cart.push(p); updateBadges(); showToast('Added to Bag',p.name+' added.'); }
+function toggleFav(id,el){ var idx=favs.indexOf(id); if(idx>-1){ favs.splice(idx,1); el.innerText='♡'; } else { favs.push(id); el.innerText='♥'; } updateBadges(); }
+function updateBadges(){ var c=document.getElementById('cartBadge'); var f=document.getElementById('favBadge'); c.style.display=cart.length?'flex':'none'; c.innerText=cart.length; f.style.display=favs.length?'flex':'none'; f.innerText=favs.length; }
+function closeAllPanels(){ document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open')); document.getElementById('overlay').classList.remove('show'); }
+function openPanel(id){ closeAllPanels(); document.getElementById(id).classList.add('open'); document.getElementById('overlay').classList.add('show'); }
+function openProfile(){ openPanel('profilePanel'); document.getElementById('profileBody').innerHTML='<div class="profile-row"><span>Name</span><span>E_FITS Customer</span></div><div class="profile-row"><span>Location</span><span>Ijebu Ode, Ogun State</span></div>'; }
+function openWallet(){ openPanel('walletPanel'); }
+function openFavs(){ openPanel('favPanel'); document.getElementById('favBody').innerHTML=favs.length?favs.map(id=>{var p=PRODUCTS.find(x=>x.id===id);return `<div class="item"><img src="${p.img}"><div><b>${p.name}</b><br>₦${p.price.toLocaleString()}</div></div>`}).join(''):'<p>No favourites yet. Tap ♥ on any dress.</p>'; }
+function openCart(){ openPanel('cartPanel'); document.getElementById('cartBody').innerHTML=cart.length?cart.map(p=>`<div class="item"><img src="${p.img}"><div><b>${p.name}</b><br>₦${p.price.toLocaleString()}</div></div>`).join(''):'<p>Your bag is empty.</p>'; }
+function showToast(t,m){ document.getElementById('toastTitle').innerText=t; document.getElementById('toastMsg').innerText=m; document.getElementById('toast').classList.add('show'); }
+function hideToast(){ document.getElementById('toast').classList.remove('show'); }
 
-function addBag(){ bag++; document.getElementById('bagCount').innerText=bag; alert('Added to Bag! You now have '+bag+' items.'); }
-function toggleFav(el){ el.classList.toggle('active'); if(el.classList.contains('active')){ favs++; el.innerText='♥'; } else { favs--; el.innerText='♡'; } document.getElementById('favCount').innerText=favs; }
-
-function showModal(title,html){ document.getElementById('modalTitle').innerText=title; document.getElementById('modalText').innerHTML=html; document.getElementById('modal').classList.add('open'); }
-function closeModal(){ document.getElementById('modal').classList.remove('open'); }
-document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeModal(); });
-
-function openProfile(){ showModal('My Profile','<p><b>Welcome to E_FITS</b><br>Name: E_FITS Customer<br>Location: Ijebu Ode, Ogun State<br><br>Your orders, measurements and settings go here.</p>'); }
-function openWallet(){ showModal('My Wallet','<p>Balance: <b>₦0</b><br><br>Top up to shop faster. Your refunds and credits go here.</p>'); }
-function openFavs(){ showModal('Favourites','<p>You have <b>'+favs+'</b> saved items.<br>Tap the heart ♥ on any dress to save it here.</p>'); }
-function openBag(){ showModal('My Bag','<p>You have <b>'+bag+'</b> items in your bag.<br><br>Tap ADD on any dress to add more. Checkout coming next.</p>'); }
-
-// CHAT
-const chatBox=document.getElementById('chatBox');
-const chatBody=document.getElementById('chatBody');
-const chatInput=document.getElementById('chatInput');
-document.getElementById('chatFab').onclick=()=>{ chatBox.classList.add('open'); document.body.style.overflow='hidden'; document.body.classList.add('locked'); };
-function closeChat(){ chatBox.classList.remove('open'); document.body.style.overflow=''; document.body.classList.remove('locked'); }
-document.getElementById('closeChat').onclick=closeChat;
-chatBody.addEventListener('wheel',function(e){ e.stopPropagation(); const atTop=this.scrollTop===0; const atBottom=this.scrollTop+this.clientHeight>=this.scrollHeight-2; if((atTop && e.deltaY<0)||(atBottom && e.deltaY>0)){ e.preventDefault(); } },{passive:false});
-chatBody.addEventListener('touchmove',function(e){ e.stopPropagation(); },{passive:true});
-function quickAsk(t){ chatInput.value=t; send(); }
-function send(){
-  const v=chatInput.value.trim(); if(!v) return;
-  chatBody.innerHTML+=`<div class="msg me">${v}</div>`; chatInput.value=''; chatBody.scrollTop=chatBody.scrollHeight;
+// CHAT - FIXED: LOCKS BACKGROUND, NO LEAK
+let chatOpen=false;
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chatPanel').classList.toggle('open',chatOpen);
+  document.getElementById('chatGreeting').classList.remove('show');
+  if(chatOpen){ document.body.classList.add('locked'); }
+  else { document.body.classList.remove('locked'); }
+}
+function quickAsk(t){ document.getElementById('chatInput').value=t; sendChat(); }
+function sendChat(){
+  var inp=document.getElementById('chatInput'); var v=inp.value.trim(); if(!v) return;
+  var body=document.getElementById('chatBody'); body.innerHTML+=`<div class="chat-msg user">${v}</div>`; inp.value=''; body.scrollTop=body.scrollHeight;
   setTimeout(()=>{
-    let reply='Thanks for asking! For sizes we have S - XL, delivery to Ijebu Ode / Lagos is 2-4 days. Want me to help you pick a print?';
-    if(v.toLowerCase().includes('size')) reply='We have S, M, L, XL. The Adire gowns are free-flowing, so if you are between sizes, pick the smaller one. What is your size?';
-    if(v.toLowerCase().includes('deliver')) reply='Delivery: Ijebu Ode ₦1,500 (1-2 days), Lagos ₦2,500 (2-4 days), Nationwide ₦3,500. Free delivery on orders above ₦50,000.';
-    if(v.toLowerCase().includes('adire')||v.toLowerCase().includes('gown')) reply='Our best sellers are OSUN ADIRE GOWN ₦19,500 and MINIMAL ADIRE TWO-PIECE ₦20,500. Both are available in 3 prints. Which one do you like?';
-    chatBody.innerHTML+=`<div class="msg ai">${reply}</div>`; chatBody.scrollTop=chatBody.scrollHeight;
+    var low=v.toLowerCase(); var reply='Thanks for asking! For sizes we have S - XL, delivery to Ijebu Ode / Lagos is 2-4 days. Want me to help you pick a print?';
+    if(low.includes('size')) reply='We have S, M, L, XL. The Adire gowns are free-flowing, so if you are between sizes, pick the smaller one. What is your size?';
+    if(low.includes('deliver')) reply='Delivery: Ijebu Ode ₦1,500 (1-2 days), Lagos ₦2,500 (2-4 days), Nationwide ₦3,500. Free delivery above ₦50,000.';
+    if(low.includes('adire')||low.includes('gown')) reply='Our best sellers are OSUN ADIRE GOWN ₦19,500 and MINIMAL ADIRE TWO-PIECE ₦20,500. Both in 3 prints. Which one do you like?';
+    body.innerHTML+=`<div class="chat-msg ai">${reply}</div>`; body.scrollTop=body.scrollHeight;
   },600);
 }
-document.getElementById('sendBtn').onclick=send;
-chatInput.addEventListener('keydown',e=>{ if(e.key==='Enter') send(); });
+document.getElementById('chatInput').addEventListener('keydown',e=>{ if(e.key==='Enter') sendChat(); });
+// STOP CHAT SCROLL FROM LEAKING TO BACKGROUND - THE MAIN FIX
+var cb=document.getElementById('chatBody');
+if(cb){
+  cb.addEventListener('wheel',function(e){
+    e.stopPropagation();
+    var atTop=this.scrollTop===0;
+    var atBottom=this.scrollTop+this.clientHeight>=this.scrollHeight-2;
+    if((atTop&&e.deltaY<0)||(atBottom&&e.deltaY>0)){ e.preventDefault(); }
+  },{passive:false});
+  cb.addEventListener('touchmove',function(e){ e.stopPropagation(); },{passive:true});
+}
+setTimeout(()=>{ if(!chatOpen) document.getElementById('chatGreeting').classList.add('show'); },3000);
 </script>
 </body>
 </html>
